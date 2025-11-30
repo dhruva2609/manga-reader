@@ -1,12 +1,11 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://api.mangadex.org';
+// FIX: Change the BASE_URL to point to the local proxy route defined in vercel.json
+const BASE_URL = '/api/mangadex';
 
-// FIX: Add default headers to explicitly request JSON, which can resolve CORS issues
-axios.defaults.headers.common['Accept'] = 'application/json';
+// Remove the explicit axios.defaults.headers.common['Accept'] line as it's not needed with the proxy.
 
 export const searchManga = async (query, includedTags = []) => {
-// ... rest of searchManga remains the same
   try {
     const res = await axios.get(`${BASE_URL}/manga`, {
       params: {
@@ -26,7 +25,6 @@ export const searchManga = async (query, includedTags = []) => {
 };
 
 export const getMangaDetails = async (mangaId) => {
-// ... rest of getMangaDetails remains the same
   try {
     const res = await axios.get(`${BASE_URL}/manga/${mangaId}`);
     return res.data.data;
@@ -37,7 +35,6 @@ export const getMangaDetails = async (mangaId) => {
 };
 
 export const getChapters = async (mangaId) => {
-// ... rest of getChapters remains the same
   try {
     const res = await axios.get(`${BASE_URL}/manga/${mangaId}/feed`, {
       params: {
@@ -54,21 +51,22 @@ export const getChapters = async (mangaId) => {
 };
 
 export const getChapterPages = async (chapterId) => {
-// ... rest of getChapterPages remains the same
   if (!chapterId) {
     console.error('getChapterPages error: chapterId is undefined');
     return [];
   }
   try {
+    // Note: The /at-home/server call MUST also use the proxy base URL
     const res = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
     const { baseUrl, chapter } = res.data;
     if (!chapter || !chapter.data || !chapter.hash) {
       console.error('getChapterPages error: Invalid chapter data', res.data);
       return [];
     }
-    // Return an array of full image URLs
+    // Return an array of full image URLs (baseUrl from MangaDex should be external)
     return chapter.data.map(
-      (file) => `${baseUrl}/data/${chapter.hash}/${file}`
+      // Keep baseUrl as is, as it's a direct CDN link from MangaDex's response
+      (file) => `${baseUrl}/data/${chapter.hash}/${file}` 
     );
   } catch (error) {
     if (error.response && error.response.status === 404) {
@@ -81,18 +79,17 @@ export const getChapterPages = async (chapterId) => {
 };
 
 export const getReaderData = async (chapterId) => {
-// ... rest of getReaderData remains the same
   try {
-    // Get chapter pages and hash
+    // Get chapter pages and hash (using proxy)
     const serverRes = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
     const { baseUrl, chapter: chapterData } = serverRes.data;
     const pageUrls = chapterData.data.map(file => `${baseUrl}/data/${chapterData.hash}/${file}`);
 
-    // Get chapter details to find manga ID
+    // Get chapter details to find manga ID (using proxy)
     const chapterRes = await axios.get(`${BASE_URL}/chapter/${chapterId}`);
     const mangaId = chapterRes.data.data.relationships.find(r => r.type === 'manga').id;
 
-    // Get manga details
+    // Get manga details (using proxy)
     const mangaRes = await axios.get(`${BASE_URL}/manga/${mangaId}`, {
       params: { includes: ['cover_art'] }
     });
@@ -109,7 +106,6 @@ export const getReaderData = async (chapterId) => {
 };
 
 export const getPopularManga = async () => {
-// ... rest of getPopularManga remains the same
   try {
     const res = await axios.get(`${BASE_URL}/manga`, {
       params: {
@@ -128,7 +124,6 @@ export const getPopularManga = async () => {
 };
 
 export const getTrendingManga = async () => {
-// ... rest of getTrendingManga remains the same
   try {
     const res = await axios.get(`${BASE_URL}/manga`, {
       params: {
@@ -147,7 +142,6 @@ export const getTrendingManga = async () => {
 };
 
 export const getRecentlyAddedManga = async () => {
-// ... rest of getRecentlyAddedManga remains the same
   try {
     const res = await axios.get(`${BASE_URL}/manga`, {
       params: {
