@@ -72,7 +72,6 @@ const HomePage = () => {
   // CRITICAL FIX: Ensure 'trending' is an array before accessing .length or .slice()
   const safeTrending = trending || []; 
   
-  // Line 63 in your local file MUST now use 'safeTrending'
   const heroManga = safeTrending.length > 0 ? [safeTrending[0]] : [];
   const trendingScroll = safeTrending.slice(1);
 
