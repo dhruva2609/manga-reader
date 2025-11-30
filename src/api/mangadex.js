@@ -1,11 +1,8 @@
 import axios from 'axios';
 
-// CRITICAL FIX: Use conditional logic to switch BASE_URL based on environment.
-// This ensures the full URL is used for local development, and the proxy is used on Vercel.
-const BASE_URL = 
-  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'https://api.mangadex.org' 
-    : '/api/mangadex';
+// CRITICAL FIX: Use an empty string. On localhost, this triggers the proxy in package.json.
+// On Vercel, this relies on the vercel.json rewrite rule.
+const BASE_URL = ''; 
 
 export const searchManga = async (query, includedTags = []) => {
   try {
@@ -57,12 +54,14 @@ export const getChapterPages = async (chapterId) => {
     return [];
   }
   try {
+    // Note: The /at-home/server call must use the BASE_URL proxy
     const res = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
     const { baseUrl, chapter } = res.data;
     if (!chapter || !chapter.data || !chapter.hash) {
       console.error('getChapterPages error: Invalid chapter data', res.data);
       return [];
     }
+    // The CDN URL (baseUrl) returned by MangaDex is external, so it remains a direct link.
     return chapter.data.map(
       (file) => `${baseUrl}/data/${chapter.hash}/${file}` 
     );
@@ -78,6 +77,7 @@ export const getChapterPages = async (chapterId) => {
 
 export const getReaderData = async (chapterId) => {
   try {
+    // All API calls must use the proxy BASE_URL
     const serverRes = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
     const { baseUrl, chapter: chapterData } = serverRes.data;
     const pageUrls = chapterData.data.map(file => `${baseUrl}/data/${chapterData.hash}/${file}`);
