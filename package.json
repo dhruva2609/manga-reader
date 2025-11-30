@@ -23,6 +23,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "https://api.mangadex.org",
   "eslintConfig": {
     "extends": [
       "react-app",
