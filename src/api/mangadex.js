@@ -1,95 +1,78 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://api.mangadex.org';
+// FIX: Change the BASE_URL to point to the local Vercel Serverless Function
+const BASE_URL = '/api/mangadex-proxy?path=';
 
-export const searchManga = async (query, includedTags = []) => {
+const fetchData = async (endpoint, params = {}) => {
   try {
-    const res = await axios.get(`${BASE_URL}/manga`, {
-      params: {
-        title: query,
-        limit: 10,
-        includes: ['cover_art'],
-        // Add includedTags support
-        includedTags: includedTags, 
-        contentRating: ['safe', 'suggestive', 'erotica'], // Optional: allow user to toggle rating
-      }
-    });
+    // The endpoint will be appended to the 'path' query parameter in the Vercel function
+    const res = await axios.get(`${BASE_URL}${endpoint}`, { params });
     return res.data.data;
   } catch (error) {
-    console.error('searchManga error:', error);
+    console.error(`Error fetching ${endpoint}:`, error);
     return [];
   }
 };
 
-export const getMangaDetails = async (mangaId) => {
+const fetchDataDetails = async (endpoint, params = {}) => {
   try {
-    const res = await axios.get(`${BASE_URL}/manga/${mangaId}`);
+    const res = await axios.get(`${BASE_URL}${endpoint}`, { params });
     return res.data.data;
   } catch (error) {
-    console.error('getMangaDetails error:', error);
+    console.error(`Error fetching ${endpoint}:`, error);
     return null;
   }
 };
 
-export const getChapters = async (mangaId) => {
-  try {
-    const res = await axios.get(`${BASE_URL}/manga/${mangaId}/feed`, {
-      params: {
-        translatedLanguage: ['en'],
-        order: { chapter: 'asc' },
-        limit: 100
-      }
-    });
-    return res.data.data;
-  } catch (error) {
-    console.error('getChapters error:', error);
-    return [];
-  }
-};
+// =========================================================================
+// All original API functions updated to use the proxy URL structure
+// =========================================================================
 
-export const getChapterPages = async (chapterId) => {
-  if (!chapterId) {
-    console.error('getChapterPages error: chapterId is undefined');
-    return [];
-  }
-  try {
-    const res = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
-    const { baseUrl, chapter } = res.data;
-    if (!chapter || !chapter.data || !chapter.hash) {
-      console.error('getChapterPages error: Invalid chapter data', res.data);
-      return [];
-    }
-    // Return an array of full image URLs
-    return chapter.data.map(
-      (file) => `${baseUrl}/data/${chapter.hash}/${file}`
-    );
-  } catch (error) {
-    if (error.response && error.response.status === 404) {
-      console.error(`getChapterPages error: Chapter ${chapterId} not found (404)`);
-    } else {
-      console.error('getChapterPages error:', error);
-    }
-    return [];
-  }
-};
+export const searchManga = (query, includedTags = []) => 
+  fetchData('manga', {
+    title: query,
+    limit: 10,
+    includes: ['cover_art'],
+    includedTags: includedTags, 
+    contentRating: ['safe', 'suggestive', 'erotica'],
+  });
+
+export const getMangaDetails = (mangaId) => 
+  fetchDataDetails(`manga/${mangaId}`);
+
+export const getChapters = (mangaId) => 
+  fetchData(`manga/${mangaId}/feed`, {
+    translatedLanguage: ['en'],
+    order: { chapter: 'asc' },
+    limit: 100
+  });
+
+// NOTE: getChapterPages and getReaderData use the "at-home" endpoint which is a bit different.
+// We must modify the getReaderData logic to use the proxy path structure carefully.
 
 export const getReaderData = async (chapterId) => {
   try {
-    // Fix B4: Optimize by running the two independent calls in parallel
+    // 1. Fetch Chapter and Server URLs (Parallel)
     const [chapterRes, serverRes] = await Promise.all([
-      axios.get(`${BASE_URL}/chapter/${chapterId}`), // Needed for mangaId and chapterTitle
-      axios.get(`${BASE_URL}/at-home/server/${chapterId}`) // Needed for baseUrl and page files
+      // Use the proxy for chapter details
+      axios.get(`/api/mangadex-proxy?path=chapter/${chapterId}`), 
+      // Use the proxy for server link, but the MangaDex server link is still a third-party server, 
+      // and must be retrieved from the proxy response.
+      axios.get(`/api/mangadex-proxy?path=at-home/server/${chapterId}`) 
     ]);
 
     const chapterData = chapterRes.data.data;
     const mangaId = chapterData.relationships.find(r => r.type === 'manga').id;
 
-    // Now that we have mangaId, fetch manga details (sequential but faster as two prior calls were parallel)
-    const mangaRes = await axios.get(`${BASE_URL}/manga/${mangaId}`, {
+    // 2. Fetch Manga Details
+    const mangaRes = await axios.get(`/api/mangadex-proxy?path=manga/${mangaId}`, {
       params: { includes: ['cover_art'] }
     });
 
+    // 3. Construct Page URLs (Crucial Step)
     const { baseUrl, chapter: chapterFiles } = serverRes.data;
+    // NOTE: MangaDex images cannot be proxied through Vercel easily and are meant to be loaded directly 
+    // from the returned 'baseUrl' or its server. This step remains the same.
     const pageUrls = chapterFiles.data.map(file => `${baseUrl}/data/${chapterFiles.hash}/${file}`);
 
     return {
@@ -103,56 +86,30 @@ export const getReaderData = async (chapterId) => {
   }
 };
 
-export const getPopularManga = async () => {
-  try {
-    const res = await axios.get(`${BASE_URL}/manga`, {
-      params: {
-        limit: 20,
-        includes: ['cover_art'],
-        order: { followedCount: 'desc' }, // Sort by popularity
-        contentRating: ['safe', 'suggestive'], 
-        hasAvailableChapters: 'true'
-      }
-    });
-    return res.data.data;
-  } catch (error) {
-    console.error('getPopularManga error:', error);
-    return [];
-  }
-};
+// ... remaining functions updated to use fetchDataDetails/fetchData
+export const getPopularManga = () => 
+  fetchData('manga', {
+    limit: 20,
+    includes: ['cover_art'],
+    order: { followedCount: 'desc' },
+    contentRating: ['safe', 'suggestive'], 
+    hasAvailableChapters: 'true'
+  });
 
-export const getTrendingManga = async () => {
-  try {
-    const res = await axios.get(`${BASE_URL}/manga`, {
-      params: {
-        limit: 10,
-        includes: ['cover_art', 'author'],
-        order: { followedCount: 'desc' },
-        contentRating: ['safe', 'suggestive'],
-        hasAvailableChapters: 'true'
-      }
-    });
-    return res.data.data;
-  } catch (error) {
-    console.error('getTrendingManga error:', error);
-    return [];
-  }
-};
+export const getTrendingManga = () => 
+  fetchData('manga', {
+    limit: 10,
+    includes: ['cover_art', 'author'],
+    order: { followedCount: 'desc' },
+    contentRating: ['safe', 'suggestive'],
+    hasAvailableChapters: 'true'
+  });
 
-export const getRecentlyAddedManga = async () => {
-  try {
-    const res = await axios.get(`${BASE_URL}/manga`, {
-      params: {
-        limit: 15,
-        includes: ['cover_art'],
-        order: { createdAt: 'desc' },
-        contentRating: ['safe', 'suggestive'],
-        hasAvailableChapters: 'true'
-      }
-    });
-    return res.data.data;
-  } catch (error) {
-    console.error('getRecentlyAddedManga error:', error);
-    return [];
-  }
-};
+export const getRecentlyAddedManga = () => 
+  fetchData('manga', {
+    limit: 15,
+    includes: ['cover_art'],
+    order: { createdAt: 'desc' },
+    contentRating: ['safe', 'suggestive'],
+    hasAvailableChapters: 'true'
+  });
