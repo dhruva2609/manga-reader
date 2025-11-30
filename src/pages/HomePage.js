@@ -15,7 +15,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      try { // Added try/catch to log potential API failures
+      try {
         const [popularData, trendData, recentData] = await Promise.all([
           getPopularManga(),
           getTrendingManga(),
@@ -26,7 +26,6 @@ const HomePage = () => {
         setRecent(recentData || []);
       } catch (error) {
         console.error("Home page API fetch failed:", error);
-        // Set empty arrays on failure to avoid subsequent rendering crashes
         setPopular([]);
         setTrending([]);
         setRecent([]);
@@ -69,8 +68,8 @@ const HomePage = () => {
     </div>
   );
 
-  // FIX: Use a safe variable to ensure 'trending' is an array, preventing the crash.
-  const safeTrending = trending || []; 
+  // FIX: REARRANGEMENT - Define safeTrending first and use it for all subsequent operations.
+  const safeTrending = trending || []; // This line MUST execute before accessing length or slice
   
   const heroManga = safeTrending.length > 0 ? [safeTrending[0]] : [];
   const trendingScroll = safeTrending.slice(1);
