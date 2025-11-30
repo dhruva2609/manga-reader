@@ -2,7 +2,11 @@ import axios from 'axios';
 
 const BASE_URL = 'https://api.mangadex.org';
 
+// FIX: Add default headers to explicitly request JSON, which can resolve CORS issues
+axios.defaults.headers.common['Accept'] = 'application/json';
+
 export const searchManga = async (query, includedTags = []) => {
+// ... rest of searchManga remains the same
   try {
     const res = await axios.get(`${BASE_URL}/manga`, {
       params: {
@@ -22,6 +26,7 @@ export const searchManga = async (query, includedTags = []) => {
 };
 
 export const getMangaDetails = async (mangaId) => {
+// ... rest of getMangaDetails remains the same
   try {
     const res = await axios.get(`${BASE_URL}/manga/${mangaId}`);
     return res.data.data;
@@ -32,6 +37,7 @@ export const getMangaDetails = async (mangaId) => {
 };
 
 export const getChapters = async (mangaId) => {
+// ... rest of getChapters remains the same
   try {
     const res = await axios.get(`${BASE_URL}/manga/${mangaId}/feed`, {
       params: {
@@ -48,6 +54,7 @@ export const getChapters = async (mangaId) => {
 };
 
 export const getChapterPages = async (chapterId) => {
+// ... rest of getChapterPages remains the same
   if (!chapterId) {
     console.error('getChapterPages error: chapterId is undefined');
     return [];
@@ -74,6 +81,7 @@ export const getChapterPages = async (chapterId) => {
 };
 
 export const getReaderData = async (chapterId) => {
+// ... rest of getReaderData remains the same
   try {
     // Get chapter pages and hash
     const serverRes = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
@@ -101,6 +109,7 @@ export const getReaderData = async (chapterId) => {
 };
 
 export const getPopularManga = async () => {
+// ... rest of getPopularManga remains the same
   try {
     const res = await axios.get(`${BASE_URL}/manga`, {
       params: {
@@ -119,6 +128,7 @@ export const getPopularManga = async () => {
 };
 
 export const getTrendingManga = async () => {
+// ... rest of getTrendingManga remains the same
   try {
     const res = await axios.get(`${BASE_URL}/manga`, {
       params: {
@@ -137,6 +147,7 @@ export const getTrendingManga = async () => {
 };
 
 export const getRecentlyAddedManga = async () => {
+// ... rest of getRecentlyAddedManga remains the same
   try {
     const res = await axios.get(`${BASE_URL}/manga`, {
       params: {
