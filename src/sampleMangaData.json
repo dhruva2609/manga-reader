@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "title": "One Piece",
+    "chapters": [
+      {
+        "chapter": "1",
+        "pages": ["/images/onepiece/1/1.jpg", "/images/onepiece/1/2.jpg"]
+      },
+      {
+        "chapter": "2",
+        "pages": ["/images/onepiece/2/1.jpg", "/images/onepiece/2/2.jpg"]
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "title": "Naruto",
+    "chapters": [
+      {
+        "chapter": "1",
+        "pages": ["/images/naruto/1/1.jpg", "/images/naruto/1/2.jpg"]
+      }
+    ]
+  }
+]

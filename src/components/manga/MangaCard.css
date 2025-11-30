@@ -1,0 +1,47 @@
+.favorite-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: var(--accent, #6C63FF);
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+  outline: none;
+  padding: 0 0.5rem;
+}
+.favorite-btn.active {
+  color: gold;
+}
+
+/* New styles for grid display variant */
+.manga-card-grid-item {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.manga-card-grid-item:hover {
+  transform: translateY(-5px);
+}
+
+.manga-card-grid-cover {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 5 / 7;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--card-bg-color);
+}
+
+.manga-card-grid-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

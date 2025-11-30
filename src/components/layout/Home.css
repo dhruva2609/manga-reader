@@ -1,0 +1,86 @@
+.home-container {
+  width: 100%;
+  padding-bottom: 3rem;
+}
+
+.home-section {
+  margin-bottom: 3rem;
+}
+
+.home-section h3 {
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.horizontal-scroll {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding: 1rem 0.5rem 2rem 0.5rem; /* Padding bottom for hover effects */
+  scroll-behavior: smooth;
+}
+
+/* Hide default scrollbar but allow scrolling */
+.horizontal-scroll {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-item {
+  min-width: 180px;
+  max-width: 180px;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.scroll-item:hover {
+  transform: translateY(-10px) scale(1.02);
+  z-index: 10;
+}
+
+/* Override Card Styles specifically for the Horizontal List */
+.scroll-item .manga-card {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.scroll-item .manga-card img {
+  width: 100%;
+  height: 260px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  transition: box-shadow 0.3s;
+}
+
+.scroll-item:hover .manga-card img {
+  box-shadow: 0 12px 30px rgba(81, 66, 252, 0.4); /* Purple glow on hover */
+  border: 2px solid var(--accent);
+}
+
+.scroll-item .manga-card-title {
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.scroll-item .manga-card-desc,
+.scroll-item .favorite-btn {
+  display: none; /* Keep it clean */
+}

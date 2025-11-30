@@ -1,0 +1,191 @@
+:root {
+  --navbar-bg: #fff;
+  --navbar-text:#6C63FF; /* Brand color */
+  --navbar-link: #23263A; /* Inactive link text */
+  --navbar-link-hover:#6C63FF; /* Hover/Active color (Light Mode Primary Accent) */
+  --navbar-border: #E3E7ED;
+  --navbar-shadow: 0 2px 16px rgba(108, 99, 255, 0.08);
+  --bg-card: #fff; /* For dropdown */
+  --border: #e3e7ed; /* For dropdown */
+  --text-muted: #8A8FA6; /* For dropdown */
+}
+
+[data-theme="dark"] {
+  --navbar-bg: rgba(19, 19, 43, 0.95); /* Semi-transparent Dark Navy */
+  --navbar-text: #FFFFFF;
+  --navbar-link: #8A8FA6;
+  --navbar-link-hover: #FF56F6; /* Neon Pink for Active/Hover */
+  --navbar-border: #252543;
+  --navbar-shadow: 0 4px 20px rgba(81, 66, 252, 0.15);
+  --bg-card: #16162D; 
+  --border: #252543;
+}
+
+.navbar {
+  background: var(--navbar-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1.5px solid var(--navbar-border);
+  box-shadow: var(--navbar-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.navbar-content-wrapper {
+  max-width: 1400px; 
+  margin: 0 auto;
+  padding: 0.5rem 2.5rem; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Ensures vertical alignment */
+}
+
+/* 1. Brand Wrapper: Manages spacing between brand and links */
+.navbar-brand-wrapper {
+    flex-shrink: 0; 
+    text-decoration: none;
+    /* FIX: Add margin to separate brand title from navigation links */
+    margin-right: 3rem; 
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--navbar-text);
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.brand-accent {
+  color: var(--navbar-link-hover);
+}
+
+/* 2. Navigation Links */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem; 
+  flex-grow: 0; 
+  flex-shrink: 0;
+  
+  /* FIX: Add margin to the right of the links container 
+          to push it away from the search bar */
+  margin-right: 4rem; 
+}
+
+.nav-link {
+  color: var(--navbar-link);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.25rem 0; 
+  font-size: 1.05rem;
+  transition: color 0.2s, opacity 0.2s;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: var(--navbar-link-hover);
+}
+
+.nav-link.active {
+  color: var(--navbar-link-hover);
+  font-weight: 600;
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: var(--navbar-link-hover);
+  border-radius: 1px;
+}
+
+/* 3. Search & Actions Wrapper: Pushes group to the far right and aligns contents */
+.navbar-search-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; 
+    margin-left: auto; /* Pushes group to the far right */
+}
+
+/* --- Search Dropdown Specific Styles --- */
+
+.navbar-search {
+  position: relative; 
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+/* Ensure the search bar itself looks good within the Navbar */
+.navbar-search .search-bar-container {
+    /* Critical fix: Override the margin-bottom from MangaSearch.css */
+    margin-bottom: 0; 
+    width: 300px;
+}
+
+.search-results-dropdown {
+  position: absolute;
+  top: 100%; 
+  right: 0;
+  left: auto; 
+  width: 400px;
+  
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  z-index: 100;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+
+.loader-small {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-shrink: 0;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 900px) {
+  .navbar-links {
+    display: none;
+  }
+  
+  .navbar-content-wrapper {
+    padding: 0.5rem 1rem;
+  }
+
+  .navbar-search-actions {
+    flex-grow: 1;
+    justify-content: flex-end;
+  }
+  
+  .navbar-search .search-bar-container {
+    width: 100%; 
+    max-width: 300px; 
+  }
+
+  /* Adjust dropdown on mobile to prevent overflow */
+  .search-results-dropdown {
+    width: 90vw;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+  }
+}

@@ -1,0 +1,96 @@
+:root {
+  --search-bg: #fff;
+  --search-border: #E3E7ED;
+  --search-shadow: 0 2px 12px rgba(44, 62, 80, 0.06);
+  --search-border-focus: #6C63FF;
+  --search-shadow-focus: 0 4px 20px rgba(108, 99, 255, 0.10);
+  --search-input: #23263A;
+  --search-btn-bg: #6C63FF;
+  --search-btn-bg-hover: #4F47C8;
+  --search-btn-shadow: 0 2px 6px rgba(108,99,255,0.07);
+  --search-clear: #B0B3C6;
+  --search-clear-hover: #6C63FF;
+}
+
+[data-theme="dark"] {
+  --search-bg: #16162D;          /* Lighter Navy to pop against the Sidebar (#13132B) */
+  --search-border: #252543;      /* Low contrast border */
+  --search-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  --search-border-focus: #5142FC; /* Vivid Purple Focus border */
+  --search-shadow-focus: 0 4px 20px rgba(81, 66, 252, 0.25); /* Purple Glow */
+  --search-input: #FFFFFF;       /* Pure White text */
+  --search-btn-bg: #5142FC;      /* Vivid Purple Search Button */
+  --search-btn-bg-hover: #FF56F6;/* Neon Pink on Hover */
+  --search-btn-shadow: 0 2px 8px rgba(81, 66, 252, 0.35);
+  --search-clear: #8A8FA6;       /* Cool Grey */
+  --search-clear-hover: #FF56F6; /* Neon Pink hover */
+}
+
+.search-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Ensures spacing */
+  background: var(--search-bg);
+  border-radius: 24px;
+  box-shadow: var(--search-shadow);
+  border: 1.5px solid var(--search-border);
+  padding: 0.4rem 0.8rem 0.4rem 1.2rem; /* Adjusted padding */
+  transition: box-shadow 0.2s, border 0.2s;
+  margin-bottom: 2rem;
+  width: 90%;
+  max-width: 400px; /* Slightly wider */
+  gap: 12px; /* <--- FIXED: Adds consistent space between input and button */
+}
+
+.search-bar-container.focused {
+  border: 1.5px solid var(--search-border-focus);
+  box-shadow: var(--search-shadow-focus);
+}
+
+.search-input {
+  flex: 1; /* Takes up all remaining space */
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1.1rem;
+  color: var(--search-input);
+  padding: 0.5rem 0;
+  width: 100%; /* Ensure full width */
+}
+
+.search-btn {
+  background: var(--search-btn-bg);
+  border: none;
+  border-radius: 50%;
+  width: 42px; /* Slightly larger for better clickability */
+  height: 42px;
+  flex-shrink: 0; /* Prevents button from shrinking */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  box-shadow: var(--search-btn-shadow);
+  margin-left: 0; /* Removed margin, using gap instead */
+}
+
+.search-btn:hover {
+  background: var(--search-btn-bg-hover);
+  transform: scale(1.05);
+}
+
+.clear-btn {
+  background: none;
+  border: none;
+  color: var(--search-clear);
+  font-size: 1.5rem;
+  margin-right: 0.2rem;
+  cursor: pointer;
+  transition: color 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+
+.clear-btn:hover {
+  color: var(--search-clear-hover);
+}
