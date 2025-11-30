@@ -68,9 +68,10 @@ const HomePage = () => {
     </div>
   );
 
-  // FIX: REARRANGEMENT - Define safeTrending first and use it for all subsequent operations.
-  const safeTrending = trending || []; // This line MUST execute before accessing length or slice
+  // FIX: Define safeTrending first and use it for all subsequent operations.
+  const safeTrending = trending || []; 
   
+  // CRITICAL FIX: Use safeTrending for length check and slicing
   const heroManga = safeTrending.length > 0 ? [safeTrending[0]] : [];
   const trendingScroll = safeTrending.slice(1);
 
