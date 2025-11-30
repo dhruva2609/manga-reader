@@ -21,8 +21,9 @@ const HomePage = () => {
           getTrendingManga(),
           getRecentlyAddedManga()
         ]);
-        setPopular(popularData || []);
-        setTrending(trendData || []);
+        // Use default empty array in case API returns null/undefined
+        setPopular(popularData || []); 
+        setTrending(trendData || []); 
         setRecent(recentData || []);
       } catch (error) {
         console.error("Home page API fetch failed:", error);
@@ -68,10 +69,10 @@ const HomePage = () => {
     </div>
   );
 
-  // FIX: Define safeTrending first and use it for all subsequent operations.
+  // CRITICAL FIX: Ensure 'trending' is an array before accessing .length or .slice()
   const safeTrending = trending || []; 
   
-  // CRITICAL FIX: Use safeTrending for length check and slicing
+  // Line 63 in your local file MUST now use 'safeTrending'
   const heroManga = safeTrending.length > 0 ? [safeTrending[0]] : [];
   const trendingScroll = safeTrending.slice(1);
 
