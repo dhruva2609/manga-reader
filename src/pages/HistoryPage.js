@@ -9,8 +9,8 @@ const HistoryPage = () => {
   const history = getAllProgress().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
   const navigate = useNavigate();
 
-  const handleMangaClick = (mangaId) => {
-    navigate(`/manga/${mangaId}`);
+  const handleMangaClick = (manga) => {
+    navigate(`/manga/${manga.id}`);
   };
 
   return (

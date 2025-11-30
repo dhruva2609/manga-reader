@@ -23,7 +23,7 @@ const SearchView = ({ searchResults, loading, onSelectManga }) => {
       )}
 
       {!loading && searchResults.length > 0 && (
-        <MangaList mangas={searchResults} onSelect={(manga) => onSelectManga(manga.id)} />
+        <MangaList mangas={searchResults} onSelect={onSelectManga} />
       )}
     </div>
   );

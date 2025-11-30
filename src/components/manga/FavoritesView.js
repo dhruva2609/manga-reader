@@ -22,7 +22,7 @@ const FavoritesView = ({ onSelectManga }) => {
       <div className="fav-grid">
         {favorites.map(manga => (
           // IMPORTANT: Pass the manga ID to the routing handler
-          <div key={manga.id} className="fav-grid-item" onClick={() => onSelectManga(manga.id)}>
+          <div key={manga.id} className="fav-grid-item" onClick={() => onSelectManga(manga)}>
             <div className="fav-cover-wrapper">
               <img 
                 src={manga.cover || 'https://via.placeholder.com/150'} 

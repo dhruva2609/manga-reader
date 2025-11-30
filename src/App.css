@@ -7,6 +7,8 @@
   --accent: #6C63FF;
   --accent2: #5EDFFF;
   --border: #e3e7ed;
+  /* Fix S1: Define missing text-primary variable */
+  --text-primary: var(--text-main); 
 }
 
 /* Updated Dark Mode to match the Crypto/NFT Image */
@@ -19,6 +21,8 @@
   --accent: #5142FC;       /* Vibrant Purple (Primary Buttons) */
   --accent2: #FF56F6;      /* Neon Pink (Secondary/Gradients) */
   --border: #252543;       /* Low contrast border */
+  /* Fix S1: Define missing text-primary variable in dark mode */
+  --text-primary: var(--text-main); 
 }
 
 /* === Base Styles === */
@@ -176,6 +180,13 @@ body {
   background: var(--accent2);
 }
 
+@media (max-width: 768px) {
+  .manga-details .hero-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
 /* === Chapter List === */
 .chapter-list {
   width: 100%;
@@ -289,6 +300,16 @@ body {
   background: var(--border);
   color: var(--text-muted);
   cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .reader .page-controls {
+    gap: 1rem;
+  }
+
+  .reader .manga-page {
+    max-height: 60vh;
+  }
 }
 
 button:active {

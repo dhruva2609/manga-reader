@@ -73,6 +73,36 @@ export const getChapterPages = async (chapterId) => {
   }
 };
 
+export const getReaderData = async (chapterId) => {
+  try {
+    // Fix B4: Optimize by running the two independent calls in parallel
+    const [chapterRes, serverRes] = await Promise.all([
+      axios.get(`${BASE_URL}/chapter/${chapterId}`), // Needed for mangaId and chapterTitle
+      axios.get(`${BASE_URL}/at-home/server/${chapterId}`) // Needed for baseUrl and page files
+    ]);
+
+    const chapterData = chapterRes.data.data;
+    const mangaId = chapterData.relationships.find(r => r.type === 'manga').id;
+
+    // Now that we have mangaId, fetch manga details (sequential but faster as two prior calls were parallel)
+    const mangaRes = await axios.get(`${BASE_URL}/manga/${mangaId}`, {
+      params: { includes: ['cover_art'] }
+    });
+
+    const { baseUrl, chapter: chapterFiles } = serverRes.data;
+    const pageUrls = chapterFiles.data.map(file => `${baseUrl}/data/${chapterFiles.hash}/${file}`);
+
+    return {
+      pages: pageUrls,
+      manga: mangaRes.data.data,
+      chapterTitle: chapterData.attributes.title || `Chapter ${chapterData.attributes.chapter}`
+    };
+  } catch (error) {
+    console.error('getReaderData error:', error);
+    return { pages: [], manga: null, chapterTitle: '' };
+  }
+};
+
 export const getPopularManga = async () => {
   try {
     const res = await axios.get(`${BASE_URL}/manga`, {

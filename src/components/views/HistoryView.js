@@ -14,7 +14,7 @@ const HistoryView = ({ onSelectManga }) => {
           <p>You haven't read anything yet!</p>
         </div>
       ) : (
-        <HistoryList history={history} onSelectManga={onSelectManga} />
+        <HistoryList history={history} onMangaClick={onSelectManga} />
       )}
     </div>
   );

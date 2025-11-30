@@ -228,3 +228,25 @@
 .favorite-grid-item .favorite-btn {
   display: none;
 }
+
+@media (max-width: 768px) {
+  .favorites-grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1.5rem 1rem;
+  }
+
+  .favorite-grid-item .manga-card img {
+    height: 200px;
+  }
+}
+
+@media (max-w-width: 480px) {
+  .favorites-grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem 0.5rem;
+  }
+
+  .favorite-grid-item .manga-card img {
+    height: 160px;
+  }
+}

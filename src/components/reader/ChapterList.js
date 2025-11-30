@@ -1,31 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getChapters } from '../../api/mangadex';
+import React from 'react'; // FIX: Removed useEffect and useState
+import { useNavigate } from 'react-router-dom'; // FIX: Removed useParams
+// FIX: Removed getChapters import
 
-
-const ChapterList = () => {
-  const { mangaId } = useParams();
+// FIX: Accept chapters prop
+const ChapterList = ({ chapters = [] }) => {
   const navigate = useNavigate();
 
-  const [chapters, setChapters] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchChapters = async () => {
-      setLoading(true);
-      const chaps = await getChapters(mangaId);
-      setChapters(chaps);
-      setLoading(false);
-    };
-    fetchChapters();
-  }, [mangaId]);
+  // FIX: Removed all internal state and useEffect for fetching chapters
 
   const handleSelectChapter = (chapterId) => {
-    // Navigate to the reader route using the selected chapter ID
     navigate(`/read/${chapterId}`);
   };
 
-  if (loading) return <div className="loader">Loading Chapters...</div>;
+  // FIX: Use prop for loading check
   if (!chapters.length) return <h1 className="chapter-list">No chapters found for this title.</h1>;
 
   return (

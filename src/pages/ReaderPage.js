@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useReadingProgress } from "../context/ReadingProgressContext";
 import DownloadPdfButton from "../components/reader/DownloadPdfButton";
-import { getChapterPages, getMangaDetails, getChapters } from "../api/mangadex";
+import { getReaderData } from "../api/mangadex";
 import { getMangaTitle } from "../utils";
 
 const ReaderPage = () => {
   const { chapterId } = useParams();
-  const { updateProgress } = useReadingProgress();
+  const { updateProgress, getProgress } = useReadingProgress();
 
   const [pages, setPages] = useState([]);
   const [manga, setManga] = useState(null);
@@ -17,30 +17,35 @@ const ReaderPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchChapterData = async () => {
+    const fetchReaderData = async () => {
       setLoading(true);
-      const pagesData = await getChapterPages(chapterId);
-      setPages(pagesData);
+      const { pages, manga, chapterTitle } = await getReaderData(chapterId);
+      
+      setPages(pages);
+      setManga(manga);
+      setChapterTitle(chapterTitle);
 
-      // To get manga details, we need to find the manga this chapter belongs to.
-      // This is a bit complex as the chapter doesn't directly link back to the manga.
-      // For now, we'll leave manga details out of the reader page.
-      // A better API structure would make this easier.
+      if (manga) {
+        const progress = getProgress(manga.id);
+        if (progress && progress.chapterId === chapterId) {
+          setPageIdx(progress.pageIdx || 0);
+        }
+      }
 
       setLoading(false);
     };
 
-    fetchChapterData();
-  }, [chapterId]);
+    fetchReaderData();
+  }, [chapterId, getProgress]);
 
 
   // 1. Save reading progress with current page
   useEffect(() => {
     if (manga && chapterId) {
-      updateProgress(manga, chapterId, pageIdx);
+      updateProgress(manga, chapterId, chapterTitle, pageIdx);
     }
     // eslint-disable-next-line
-  }, [manga, chapterId, pageIdx]);
+  }, [manga, chapterId, chapterTitle, pageIdx]);
 
   // 2. Preload next/prev images for smoother navigation
   useEffect(() => {
@@ -79,6 +84,7 @@ const ReaderPage = () => {
 
   // Page progress (within chapter)
   const pageProgress = ((pageIdx + 1) / pages.length) * 100;
+  const mangaTitle = manga ? getMangaTitle(manga) : '';
 
   return (
     <div className="reader">
@@ -139,10 +145,10 @@ const ReaderPage = () => {
         }}
       >
         <span style={{ fontWeight: 600 }}>
-          {manga?.title} {chapterTitle ? `- ${chapterTitle}` : ""}
+          {mangaTitle} {chapterTitle ? `- ${chapterTitle}` : ""}
         </span>
         <DownloadPdfButton
-          mangaTitle={manga?.title || "Manga"}
+          mangaTitle={mangaTitle || "Manga"}
           chapterTitle={chapterTitle || `Chapter ${chapterId}`}
           pageImages={pages}
         />

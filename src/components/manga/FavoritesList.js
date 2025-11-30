@@ -25,7 +25,7 @@ const FavoritesList = ({ favorites }) => {
                 <MangaCard
                     key={manga.id}
                     manga={manga}
-                    onSelect={() => handleSelectManga(manga)}
+                    onSelect={handleSelectManga}
                     coverUrl={manga.coverUrl}
                     displayVariant="grid"
                 />

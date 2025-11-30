@@ -50,7 +50,7 @@ const HomePage = () => {
               <div key={manga.id} className="scroll-item">
                 <MangaCard
                   manga={manga}
-                  onSelect={() => onSelectManga(manga)}
+                  onSelect={onSelectManga}
                   coverUrl={getCover(manga)}
                 />
               </div>
@@ -66,7 +66,7 @@ const HomePage = () => {
   return (
     <div className="home-container">
       
-      {heroManga.length > 0 && <HeroSection manga={heroManga[0]} onRead={() => onSelectManga(heroManga[0])} />}
+      {heroManga.length > 0 && <HeroSection manga={heroManga[0]} onRead={onSelectManga} />}
       
       {trendingScroll.length > 0 && renderMangaSection(<><span>🔥</span> Trending Now</>, trendingScroll)}
 

@@ -32,6 +32,32 @@ const MangaCard = ({ manga, onSelect, coverUrl, displayVariant = 'full' }) => {
     );
   }
 
+  // FIX: Add 'list' variant return block to strip down the content
+  if (displayVariant === 'list') {
+    return (
+      <div className="manga-card" onClick={() => onSelect(manga)}>
+        <div style={{ position: 'relative' }}>
+          <img src={imageSrc} alt={title} />
+          {progress && (
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0,
+              background: 'rgba(0,0,0,0.8)', color: '#fff',
+              fontSize: '0.75rem', padding: '3px', textAlign: 'center',
+              backdropFilter: 'blur(4px)'
+            }}>
+              {progress.chapterTitle || `Ch ${progress.chapterId}`}
+            </div>
+          )}
+        </div>
+        {/* Only include title, intentionally omit description and favorite button */}
+        <div>
+          <div className="manga-card-title">{title}</div>
+        </div>
+      </div>
+    );
+  }
+  
+  // Default return (full variant)
   return (
     <div className="manga-card" onClick={() => onSelect(manga)}>
       <div style={{ position: 'relative' }}>

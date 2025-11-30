@@ -26,6 +26,17 @@
   z-index: 2;
 }
 
+.hero-badge {
+  background: var(--bg-card);
+  color: var(--text-main);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
 .fab-title {
   font-size: 3rem;
   line-height: 1.1;

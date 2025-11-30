@@ -40,7 +40,7 @@ const HeroSection = ({ manga, onRead }) => {
             <button 
               className="hero-btn-primary" 
               // Functional fix: Navigates to manga details using ID
-              onClick={() => onRead(manga.id)}
+              onClick={() => onRead(manga)}
             >
               Read Now
             </button>

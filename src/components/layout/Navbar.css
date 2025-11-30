@@ -37,18 +37,17 @@
 .navbar-content-wrapper {
   max-width: 1400px; 
   margin: 0 auto;
-  padding: 0.5rem 2.5rem; 
+  /* FIX: Increased vertical padding from 0.5rem to 0.75rem to make the search bar sit lower */
+  padding: 0.75rem 2.5rem; 
   display: flex;
   justify-content: space-between;
   align-items: center; /* Ensures vertical alignment */
 }
 
-/* 1. Brand Wrapper: Manages spacing between brand and links */
+/* 1. Brand Wrapper */
 .navbar-brand-wrapper {
     flex-shrink: 0; 
     text-decoration: none;
-    /* FIX: Add margin to separate brand title from navigation links */
-    margin-right: 3rem; 
 }
 
 .navbar-brand {
@@ -64,17 +63,13 @@
   color: var(--navbar-link-hover);
 }
 
-/* 2. Navigation Links */
+/* 2. Navigation Links (Desktop) */
 .navbar-links {
   display: flex;
   align-items: center;
   gap: 2rem; 
   flex-grow: 0; 
   flex-shrink: 0;
-  
-  /* FIX: Add margin to the right of the links container 
-          to push it away from the search bar */
-  margin-right: 4rem; 
 }
 
 .nav-link {
@@ -107,35 +102,36 @@
   border-radius: 1px;
 }
 
-/* 3. Search & Actions Wrapper: Pushes group to the far right and aligns contents */
-.navbar-search-actions {
+/* 3. Actions Wrapper (Desktop) */
+.navbar-actions-wrapper {
     display: flex;
     align-items: center;
     gap: 1.5rem; 
     margin-left: auto; /* Pushes group to the far right */
 }
 
-/* --- Search Dropdown Specific Styles --- */
-
+/* Central Search Bar (Desktop) */
 .navbar-search {
   position: relative; 
   z-index: 10;
-  flex-shrink: 0;
+  flex-shrink: 1; 
+  flex-grow: 1;  
+  max-width: 500px; 
+  margin: 0 4rem; 
 }
 
-/* Ensure the search bar itself looks good within the Navbar */
+/* Ensure the search bar looks good within the Navbar */
 .navbar-search .search-bar-container {
-    /* Critical fix: Override the margin-bottom from MangaSearch.css */
     margin-bottom: 0; 
-    width: 300px;
+    width: 100%; 
 }
 
 .search-results-dropdown {
   position: absolute;
   top: 100%; 
+  left: 0;
   right: 0;
-  left: auto; 
-  width: 400px;
+  width: 100%;
   
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -161,31 +157,278 @@
   flex-shrink: 0;
 }
 
+/* Mobile Search Icon (Magnifying Glass) */
+.mobile-search-icon {
+    display: none; /* Hide by default */
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--navbar-link);
+    padding: 0;
+    transition: color 0.2s;
+    flex-shrink: 0; 
+    margin-left: 0.5rem; /* Add small space from brand */
+}
+
+.mobile-search-icon:hover {
+    color: var(--navbar-link-hover);
+}
+
+.mobile-search-icon svg {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+
+/* --- Hamburger Menu (Mobile) --- */
+.hamburger-menu {
+  display: none; 
+  cursor: pointer;
+  z-index: 1001; 
+  margin-right: 0.5rem;
+}
+
+.hamburger-icon {
+  width: 30px;
+  height: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hamburger-icon span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background-color: var(--navbar-text);
+  border-radius: 3px;
+  transition: all 0.3s ease-in-out;
+}
+
+.hamburger-icon.open span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-icon.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-icon.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* --- Mobile Navigation Side Drawer --- */
+.mobile-nav-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; 
+  gap: 1rem;
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 80vw; 
+  max-width: 320px; 
+  height: 100vh;
+  background: var(--navbar-bg);
+  padding: 1.5rem 1.25rem; 
+  box-shadow: 4px 0 15px rgba(0,0,0,0.2); 
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1001; 
+}
+
+.mobile-nav-menu.open {
+  transform: translateX(0);
+}
+
+/* Header for brand and close button */
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--navbar-border);
+  margin-bottom: 1rem;
+}
+
+/* Close button style */
+.mobile-close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--navbar-link);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.mobile-close-btn:hover {
+  opacity: 1;
+  color: var(--navbar-link-hover);
+}
+
+.mobile-nav-links-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.mobile-nav-link {
+  color: var(--navbar-link);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.1rem; 
+  padding: 0.75rem 0.5rem;
+  transition: color 0.2s, background 0.2s;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.mobile-nav-link:hover {
+  color: var(--navbar-link-hover);
+  background: var(--navbar-border);
+}
+
+.mobile-nav-link.active {
+  color: var(--navbar-link-hover);
+  font-weight: 700;
+  background: rgba(108, 99, 255, 0.1);
+}
+
+.mobile-nav-actions {
+  margin-top: auto; 
+}
+
+
+/* --- Full-Screen Mobile Search Overlay (Activated by Search Icon) --- */
+.mobile-search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    /* Fix S2: Change fixed height to 100vh for full-screen results view */
+    height: 100vh; 
+    background: var(--navbar-bg);
+    border-bottom: 1px solid var(--navbar-border);
+    box-shadow: var(--navbar-shadow);
+    z-index: 1002; 
+    display: flex;
+    /* Fix S2: Use column layout to stack search bar and results */
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.5rem 1rem;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease-in-out;
+    overflow-y: auto; /* Allow scrolling for results */
+}
+
+.mobile-search-overlay.open {
+    transform: translateY(0);
+}
+
+/* Close button (X) for the overlay */
+.mobile-search-close-btn {
+    background: none;
+    border: none;
+    color: var(--navbar-link);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.5rem;
+    margin-left: 0.5rem;
+    flex-shrink: 0;
+}
+.mobile-search-close-btn svg {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+
+.mobile-search-bar-wrapper {
+    flex-grow: 1;
+    /* Add margin to push it away from the close button */
+    margin-right: 1rem;
+    /* Fix S2: Ensure wrapper takes full width inside the overlay */
+    width: 100%; 
+}
+
+.mobile-search-bar-wrapper .search-bar-container {
+    width: 100%;
+    padding: 0.4rem 0.6rem 0.4rem 1rem; 
+}
+
+/* New element to contain the search results in the overlay */
+.mobile-search-results {
+    width: 100%;
+    /* Add top margin to separate from the search bar */
+    padding: 0 0.5rem 2rem 0.5rem; 
+    flex-grow: 1;
+}
+
+
 /* Mobile Responsiveness */
 @media (max-width: 900px) {
-  .navbar-links {
-    display: none;
-  }
   
   .navbar-content-wrapper {
-    padding: 0.5rem 1rem;
-  }
-
-  .navbar-search-actions {
-    flex-grow: 1;
-    justify-content: flex-end;
+    padding: 0.75rem 1rem; /* Matched to desktop to lower the search bar slightly */
+    gap: 0.5rem; 
   }
   
-  .navbar-search .search-bar-container {
-    width: 100%; 
-    max-width: 300px; 
+  /* Hides desktop navigation and search elements */
+  .navbar-actions-wrapper {
+    display: none; 
+  }
+  
+  .navbar-search {
+    display: none; 
   }
 
-  /* Adjust dropdown on mobile to prevent overflow */
-  .search-results-dropdown {
-    width: 90vw;
-    left: 50%;
-    transform: translateX(-50%);
-    right: auto;
+  /* Shows hamburger menu */
+  .hamburger-menu {
+    display: flex; 
+    flex-shrink: 0;
+    order: 1;
   }
+  
+  /* Brand is next */
+  .navbar-brand-wrapper {
+    flex-shrink: 0;
+    order: 2;
+    /* Pushes remaining elements (icons) to the right */
+    margin-right: auto;
+  }
+  
+  /* Shows the search icon next to the brand */
+  .mobile-search-icon {
+      display: block;
+      flex-shrink: 0;
+      order: 3;
+      margin-left: 0.5rem;
+  }
+  
+  /* Dark Mode Toggle is the last element on the far right */
+  .navbar-actions-wrapper {
+      display: flex;
+      margin-left: 0; /* Margin is handled by brand's margin-right: auto */
+      flex-shrink: 0;
+      order: 4;
+      
+      .navbar-links {
+          display: none;
+      }
+      
+      .navbar-actions {
+          /* Contains DarkModeToggle, which is what we want visible on the far right */
+          display: flex;
+      }
+  }
+}
+
+/* Delete the unused .navbar-search-actions styles */
+.navbar-search-actions {
+    display: none; 
 }

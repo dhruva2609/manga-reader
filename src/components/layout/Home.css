@@ -84,3 +84,41 @@
 .scroll-item .favorite-btn {
   display: none; /* Keep it clean */
 }
+
+@media (max-width: 768px) {
+  .home-section h3 {
+    font-size: 1.4rem;
+  }
+
+  .horizontal-scroll {
+    gap: 1rem;
+  }
+
+  .scroll-item {
+    min-width: 140px;
+    max-width: 140px;
+  }
+
+  .scroll-item .manga-card img {
+    height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-section h3 {
+    font-size: 1.2rem;
+  }
+
+  .horizontal-scroll {
+    gap: 0.5rem;
+  }
+
+  .scroll-item {
+    min-width: 120px;
+    max-width: 120px;
+  }
+
+  .scroll-item .manga-card img {
+    height: 160px;
+  }
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getMangaDetails } from '../api/mangadex';
+import { getMangaDetails, getChapters } from '../api/mangadex';
 import { useFavorites } from '../context/FavoritesContext';
 import { getMangaTitle } from '../utils';
 import ChapterList from '../components/reader/ChapterList';
@@ -11,16 +11,24 @@ const MangaPage = () => {
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
   const [manga, setManga] = useState(null);
+  const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showChapters, setShowChapters] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
       setLoading(true);
-      const data = await getMangaDetails(mangaId);
-      if (data) {
-        data.title = getMangaTitle(data);
-        setManga(data);
+      const [mangaData, chaptersData] = await Promise.all([
+        getMangaDetails(mangaId),
+        getChapters(mangaId)
+      ]);
+
+      if (mangaData) {
+        mangaData.title = getMangaTitle(mangaData);
+        setManga(mangaData);
+      }
+      if (chaptersData) {
+        setChapters(chaptersData);
       }
       setLoading(false);
     };
@@ -59,7 +67,7 @@ const MangaPage = () => {
       <p>{desc}</p>
       {desc.length === 500 && <p>... read more</p>}
 
-      {showChapters && <ChapterList />}
+      {showChapters && <ChapterList chapters={chapters} />}
     </div>
   );
 };
