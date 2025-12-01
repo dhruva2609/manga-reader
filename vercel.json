@@ -9,6 +9,11 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/mangadex/(.*)",
+      "destination": "https://api.mangadex.org/$1"
+    }
   ]
-  
 }
