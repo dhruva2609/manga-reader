@@ -3,7 +3,7 @@ import axios from 'axios';
 // FIX: Simplify BASE_URL to a relative path. 
 // This path is automatically redirected by the 'proxy' field in package.json (localhost)
 // and by the 'rewrites' in vercel.json (Vercel deployment).
-const BASE_URL = '';
+const BASE_URL = '/api/mangadex';
 
 export const searchManga = async (query, includedTags = []) => {
   try {
