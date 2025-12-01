@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-// FIX: Simplify BASE_URL to a relative path that uses the proxy/rewrite.
-// Using '/api/mangadex' for all environments ensures the request
-// goes through the configured proxy/rewrite logic (package.json/vercel.json).
-const BASE_URL = '/api/mangadex';
+// FIX: Simplify BASE_URL to a relative path. 
+// This path is automatically redirected by the 'proxy' field in package.json (localhost)
+// and by the 'rewrites' in vercel.json (Vercel deployment).
+const BASE_URL = '';
 
 export const searchManga = async (query, includedTags = []) => {
   try {
@@ -62,8 +62,7 @@ export const getChapterPages = async (chapterId) => {
       console.error('getChapterPages error: Invalid chapter data', res.data);
       return [];
     }
-    // The CDN URL (baseUrl) returned by MangaDex is external. 
-    // It's crucial to allow all MangaDex image domains in CSP for this to work.
+    // The CDN URL (baseUrl) returned by MangaDex is external, so it remains a direct link.
     return chapter.data.map(
       (file) => `${baseUrl}/data/${chapter.hash}/${file}` 
     );
