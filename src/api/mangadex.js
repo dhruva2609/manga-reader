@@ -83,10 +83,10 @@ export const getChapterPages = async (chapterId) => {
             console.error('getChapterPages error: Invalid chapter data', res.data);
             return [];
         }
-        // The CDN URL (baseUrl) returned by MangaDex is external, so it remains a direct link.
-        const pageUrls = chapter.data.map(
-            (file) => `${baseUrl}/data/${chapter.hash}/${file}` 
-        );
+        // Map page URLs to use the internal image proxy in production.
+        // Locally we can hit the CDN directly for speed.
+        const imageHost = process.env.NODE_ENV === 'development' ? baseUrl : '/api/mangadex-img';
+        const pageUrls = chapter.data.map((file) => `${imageHost}/data/${chapter.hash}/${file}`);
         console.log('DEBUG: First Page URL constructed:', pageUrls[0]); // <-- DEBUG
         return pageUrls;
     } catch (error) {
@@ -107,7 +107,8 @@ export const getReaderData = async (chapterId) => {
         // All API calls must use the proxy BASE_URL
         const serverRes = await axios.get(serverUrl);
         const { baseUrl, chapter: chapterData } = serverRes.data;
-        const pageUrls = chapterData.data.map(file => `${baseUrl}/data/${chapterData.hash}/${file}`);
+        const imageHost = process.env.NODE_ENV === 'development' ? baseUrl : '/api/mangadex-img';
+        const pageUrls = chapterData.data.map(file => `${imageHost}/data/${chapterData.hash}/${file}`);
 
         const chapterUrl = `${BASE_URL}/chapter/${chapterId}`;
         const mangaUrl = `${BASE_URL}/manga/${chapterId}`;
