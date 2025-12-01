@@ -13,7 +13,7 @@ export const getMangaTitle = (manga) => {
   const firstKey = Object.keys(titles)[0];
   return firstKey ? titles[firstKey] : "Untitled Manga";
 };
-
+export const isProductionVercel = () => process.env.NODE_ENV !== 'development';
 // --- START NEW/CORRECTED IMAGE HOST UTILITIES ---
 
 /**

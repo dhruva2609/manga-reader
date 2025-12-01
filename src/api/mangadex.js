@@ -69,8 +69,9 @@ export const getChapterPages = async (chapterId) => {
     console.log(`DEBUG: Calling getChapterPages URL: ${url}`); // <-- DEBUG
 
     try {
-        // Note: The /at-home/server call must use the BASE_URL proxy
-        const res = await axios.get(url);
+        // Step 1: Get the host server and image hash/files from the API
+        const res = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
+        const { baseUrl, chapter } = res.data;;
         
         console.log('DEBUG: Chapter Server Response Data (partial):', { 
             baseUrl: res.data.baseUrl,
@@ -78,13 +79,14 @@ export const getChapterPages = async (chapterId) => {
             dataLength: res.data.chapter.data.length
         }); // <-- DEBUG
         
-        const { baseUrl, chapter } = res.data;
+        // Ensure data is valid
         if (!chapter || !chapter.data || !chapter.hash) {
             console.error('getChapterPages error: Invalid chapter data', res.data);
             return [];
         }
-        // Map page URLs to use the internal image proxy in production.
-        // Locally we can hit the CDN directly for speed.
+        
+        // CRITICAL FIX: Map page URLs to use the internal image proxy in production for the Referer header fix.
+        // Locally uses the direct baseUrl for speed.
         const imageHost = process.env.NODE_ENV === 'development' ? baseUrl : '/api/mangadex-img';
         const pageUrls = chapter.data.map((file) => `${imageHost}/data/${chapter.hash}/${file}`);
         console.log('DEBUG: First Page URL constructed:', pageUrls[0]); // <-- DEBUG
@@ -104,12 +106,15 @@ export const getReaderData = async (chapterId) => {
     console.log(`DEBUG: Calling getReaderData Server URL: ${serverUrl}`); // <-- DEBUG
 
     try {
-        // All API calls must use the proxy BASE_URL
+        // Step 1: Get pages list via proxy
         const serverRes = await axios.get(serverUrl);
         const { baseUrl, chapter: chapterData } = serverRes.data;
+        
+        // CRITICAL FIX: Route page URLs through the internal image proxy in production.
         const imageHost = process.env.NODE_ENV === 'development' ? baseUrl : '/api/mangadex-img';
         const pageUrls = chapterData.data.map(file => `${imageHost}/data/${chapterData.hash}/${file}`);
 
+        // Step 2 & 3: Get chapter and manga details
         const chapterUrl = `${BASE_URL}/chapter/${chapterId}`;
         const mangaUrl = `${BASE_URL}/manga/${chapterId}`;
         console.log(`DEBUG: Calling Chapter URL: ${chapterUrl}`); // <-- DEBUG
