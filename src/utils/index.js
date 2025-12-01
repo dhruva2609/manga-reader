@@ -13,3 +13,23 @@ export const getMangaTitle = (manga) => {
   const firstKey = Object.keys(titles)[0];
   return firstKey ? titles[firstKey] : "Untitled Manga";
 };
+
+// --- START NEW/CORRECTED IMAGE HOST UTILITIES ---
+
+/**
+ * Returns the correct image host based on the environment.
+ * Uses the external CDN on localhost, and the Vercel proxy on deployment.
+ */
+export const getMangaImageHost = () => {
+    return process.env.NODE_ENV === 'development'
+        ? 'https://uploads.mangadex.org' 
+        : '/api/mangadex-img'; // Must match your Serverless Function file name
+};
+
+/**
+ * Constructs the full URL for a manga cover image.
+ */
+export const getCoverUrl = (mangaId, fileName, size = '.256.jpg') => {
+    const host = getMangaImageHost();
+    return `${host}/covers/${mangaId}/${fileName}${size}`;
+}

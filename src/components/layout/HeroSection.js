@@ -1,7 +1,7 @@
 import React from 'react';
-import { getMangaTitle } from '../../utils'; 
 import { useFavorites } from '../../context/FavoritesContext'; 
 import './HeroSection.css';
+import { getMangaTitle, getCoverUrl } from '../../utils';
 
 const HeroSection = ({ manga, onRead }) => {
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
@@ -9,10 +9,10 @@ const HeroSection = ({ manga, onRead }) => {
   if (!manga) return null;
 
   // Logic to find the cover art relationship
-  const cover = manga.relationships.find(r => r.type === 'cover_art');
-  // Construct the high-resolution cover URL (Poster Source)
-  const coverUrl = cover
-    ? `https://uploads.mangadex.org/covers/${manga.id}/${cover.attributes.fileName}.512.jpg`
+const cover = manga.relationships.find(r => r.type === 'cover_art');
+  const fileName = cover?.attributes?.fileName;  // Construct the high-resolution cover URL (Poster Source)
+  const coverUrl = fileName
+    ? getCoverUrl(manga.id, fileName, '.512.jpg')
     : '';
 
   const title = getMangaTitle(manga);

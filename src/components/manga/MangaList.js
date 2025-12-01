@@ -1,5 +1,6 @@
 import React from 'react';
 import MangaCard from './MangaCard';
+import { getCoverUrl } from '../../utils';
 
 // FIX: Centralize the IMAGE_HOST logic using NODE_ENV
 const IMAGE_HOST = 
@@ -12,10 +13,12 @@ const MangaList = ({ mangas, onSelect }) => (
     {mangas.map(manga => {
       // Logic to extract cover URL
       const cover = manga.relationships.find(r => r.type === 'cover_art');
-      const coverUrl = cover
-        ? `${IMAGE_HOST}/covers/${manga.id}/${cover.attributes.fileName}.256.jpg` // <--- Uses IMAGE_HOST
+      const fileName = cover?.attributes?.fileName;
+      
+      const coverUrl = fileName
+        ? getCoverUrl(manga.id, fileName, '.256.jpg') // <-- Use utility
         : 'https://via.placeholder.com/150'; // Fallback image
-
+        
       return (
         <MangaCard 
           key={manga.id} 

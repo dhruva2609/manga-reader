@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getMangaTitle } from "../utils"; // Ensure this path is correct based on your file structure
-
+import { getMangaTitle, getCoverUrl } from "../utils";
 const FavoritesContext = createContext();
 
 export function FavoritesProvider({ children }) {
@@ -35,7 +34,8 @@ export function FavoritesProvider({ children }) {
         const coverRel = manga.relationships?.find((r) => r.type === "cover_art");
         const fileName = coverRel?.attributes?.fileName;
         if (fileName) {
-            coverUrl = `https://uploads.mangadex.org/covers/${manga.id}/${fileName}.256.jpg`;
+            // FIX: Use the utility function
+            coverUrl = getCoverUrl(manga.id, fileName, '.256.jpg'); 
         } else {
             coverUrl = "https://via.placeholder.com/150"; // Fallback placeholder
         }

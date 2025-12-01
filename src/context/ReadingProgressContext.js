@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getMangaTitle } from "../utils";
-
+import { getMangaTitle, getCoverUrl } from "../utils";
 // Create the context
 const ReadingProgressContext = createContext();
 
@@ -32,7 +31,8 @@ export function ReadingProgressProvider({ children }) {
       const coverRel = manga.relationships?.find((r) => r.type === "cover_art");
       const fileName = coverRel?.attributes?.fileName;
       if (fileName) {
-        coverUrl = `https://uploads.mangadex.org/covers/${manga.id}/${fileName}.256.jpg`;
+        // FIX: Use the utility function
+        coverUrl = getCoverUrl(manga.id, fileName, '.256.jpg');
       } else {
         coverUrl = "https://via.placeholder.com/150"; // Fallback
       }
