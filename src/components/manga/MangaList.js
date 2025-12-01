@@ -1,11 +1,11 @@
 import React from 'react';
-import MangaCard from './MangaCard'; // <--- Import the component
+import MangaCard from './MangaCard';
 
-// New constant for the proxied image host path
+// FIX: Centralize the IMAGE_HOST logic using NODE_ENV
 const IMAGE_HOST = 
-  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  process.env.NODE_ENV === 'development'
     ? 'https://uploads.mangadex.org' 
-    : '/api/mangadex-img'; // Use the new Vercel proxy path
+    : '/api/mangadex-img'; // <-- Points to the new Serverless Function
 
 const MangaList = ({ mangas, onSelect }) => (
   <div className="manga-list">
@@ -13,7 +13,7 @@ const MangaList = ({ mangas, onSelect }) => (
       // Logic to extract cover URL
       const cover = manga.relationships.find(r => r.type === 'cover_art');
       const coverUrl = cover
-        ? `${IMAGE_HOST}/covers/${manga.id}/${cover.attributes.fileName}.256.jpg` // <--- Use IMAGE_HOST here
+        ? `${IMAGE_HOST}/covers/${manga.id}/${cover.attributes.fileName}.256.jpg` // <--- Uses IMAGE_HOST
         : 'https://via.placeholder.com/150'; // Fallback image
 
       return (
