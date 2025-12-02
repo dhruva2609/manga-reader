@@ -29,5 +29,5 @@ const MangaCard = ({ manga, onSelect }) => {
     </div>
   );
 };
-
+console.log("Cover URL:", coverUrl);
 export default MangaCard;
