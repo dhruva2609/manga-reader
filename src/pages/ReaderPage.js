@@ -7,7 +7,8 @@ import { getMangaTitle } from "../utils";
 
 const ReaderPage = () => {
   const { chapterId } = useParams();
-  const { updateProgress, getProgress } = useReadingProgress();
+  // FIX: Destructure 'getMangaProgress' instead of the non-existent 'getProgress'
+  const { updateProgress, getMangaProgress } = useReadingProgress(); 
 
   const [pages, setPages] = useState([]);
   const [manga, setManga] = useState(null);
@@ -26,7 +27,8 @@ const ReaderPage = () => {
       setChapterTitle(chapterTitle);
 
       if (manga) {
-        const progress = getProgress(manga.id);
+        // FIX: Call the correctly destructured function
+        const progress = getMangaProgress(manga.id); 
         if (progress && progress.chapterId === chapterId) {
           setPageIdx(progress.pageIdx || 0);
         }
@@ -35,8 +37,9 @@ const ReaderPage = () => {
       setLoading(false);
     };
 
+    // FIX: Dependency array updated to use the correct function name
     fetchReaderData();
-  }, [chapterId, getProgress]);
+  }, [chapterId, getMangaProgress]);
 
 
   // 1. Save reading progress with current page
