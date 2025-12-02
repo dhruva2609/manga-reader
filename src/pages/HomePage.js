@@ -4,13 +4,12 @@ import HeroSection from '../components/layout/HeroSection';
 import MangaCard from '../components/manga/MangaCard';
 import { getPopularManga, getTrendingManga, getRecentlyAddedManga } from '../api/mangadex';
 import './Home.css';
-import { getCoverUrl } from '../utils'; // <-- Correct Import
+import { getCoverUrl } from '../utils'; // <-- IMPORTED
 
-// CORRECT: This function uses the proxy logic from getCoverUrl
 const getCover = (manga) => {
     const cover = manga.relationships.find(r => r.type === 'cover_art');
     const fileName = cover?.attributes?.fileName;
-    // FIX: Use the utility function from src/utils/index.js
+    // FIX: Use the utility function
     return fileName
       ? getCoverUrl(manga.id, fileName, '.256.jpg')
       : null;
@@ -32,6 +31,7 @@ const HomePage = () => {
           getTrendingManga(),
           getRecentlyAddedManga()
         ]);
+        // Use default empty array in case API returns null/undefined
         setPopular(popularData || []); 
         setTrending(trendData || []); 
         setRecent(recentData || []);
@@ -53,7 +53,12 @@ const HomePage = () => {
 
   if (loading) return <div className="loader">Loading Dashboard...</div>;
 
-  // The incorrect getCover function that was here has been removed.
+  const getCover = (manga) => {
+    const cover = manga.relationships.find(r => r.type === 'cover_art');
+    return cover
+      ? `https://uploads.mangadex.org/covers/${manga.id}/${cover.attributes.fileName}.256.jpg`
+      : null;
+  };
 
   const renderMangaSection = (title, data) => (
     <div className="home-section" key={title}>
@@ -65,8 +70,7 @@ const HomePage = () => {
                 <MangaCard
                   manga={manga}
                   onSelect={onSelectManga}
-                  // This calls the correct, proxy-enabled function defined above
-                  coverUrl={getCover(manga)} 
+                  coverUrl={getCover(manga)}
                 />
               </div>
             ))}
@@ -75,6 +79,7 @@ const HomePage = () => {
     </div>
   );
 
+  // CRITICAL FIX: Ensure 'trending' is an array before accessing .length or .slice()
   const safeTrending = trending || []; 
   
   const heroManga = safeTrending.length > 0 ? [safeTrending[0]] : [];
