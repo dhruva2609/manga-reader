@@ -8,7 +8,7 @@ const HeroSection = ({ manga, onRead }) => {
 
   if (!manga) return null;
 
-  const coverUrl = getCoverUrl(manga, '.512.jpg');
+  const coverUrl = getCoverUrl(manga);
 
   const title = getMangaTitle(manga);
   const desc = manga.attributes.description?.en 

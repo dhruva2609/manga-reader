@@ -222,7 +222,6 @@
   white-space: normal;
   /* Allow for two lines of text before truncating */
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;  
   overflow: hidden;
   text-overflow: ellipsis;
@@ -243,7 +242,7 @@
 
   .favorite-grid-item .manga-card img {
     /* FIX: Adjusted responsive image height */
-    height: 220px;
+    height: 400px;
   }
 }
 
@@ -254,6 +253,6 @@
   }
 
   .favorite-grid-item .manga-card img {
-    height: 160px;
+    height: 400px;
   }
 }
