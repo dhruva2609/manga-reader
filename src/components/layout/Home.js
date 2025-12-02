@@ -1,89 +1,86 @@
 import React, { useEffect, useState } from 'react';
-import HeroSection from './HeroSection'; 
+import { useNavigate } from 'react-router-dom';
+import HeroSection from './HeroSection';
 import MangaCard from '../manga/MangaCard';
 import { getPopularManga, getTrendingManga, getRecentlyAddedManga } from '../../api/mangadex';
 import { getCoverUrl } from '../../utils'; // <-- KEEP THIS IMPORT
 import './Home.css';
 
-const Home = ({ onSelectManga }) => {
-  const [popular, setPopular] = useState([]); 
+const Home = ({ onSelectManga }) => { // FIX: Changed prop name from onSelect to onSelectManga
+  const [popular, setPopular] = useState([]);
   const [trending, setTrending] = useState([]);
   const [recent, setRecent] = useState([]);
   const [loading, setLoading] = useState(true);
+  // FIX: Removed unnecessary useNavigate, as onSelectManga is a prop (if using HomePage.js) 
+  // or onSelect (if using Home.js, which is likely the final version)
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      // Fetch all three lists concurrently
-      const [popularData, trendData, recentData] = await Promise.all([
-        getPopularManga(), 
-        getTrendingManga(),
-        getRecentlyAddedManga()
-      ]);
-      setPopular(popularData);
-      setTrending(trendData);
-      setRecent(recentData);
-      setLoading(false);
+      try {
+        const [popularData, trendData, recentData] = await Promise.all([
+          getPopularManga(), 
+          getTrendingManga(),
+          getRecentlyAddedManga()
+        ]);
+        setPopular(popularData);
+        setTrending(trendData);
+        setRecent(recentData);
+      } catch (error) {
+        console.error("Home page API fetch failed:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);
 
   if (loading) return <div className="loader">Loading Dashboard...</div>;
 
-  // FIX: REMOVE the redundant getCover function. 
-  // MangaCard will call the globally fixed getCoverUrl(manga) with no extra params.
+  // FIX: Removed the redundant getCover function. MangaCard handles cover URL generation.
   // const getCover = (manga) => {
   //   const cover = manga.relationships.find(r => r.type === 'cover_art');
   //   const fileName = cover?.attributes?.fileName;
   //   return fileName
-  //     ? getCoverUrl(manga.id, fileName, '.256.jpg') // Use the utility
+  //     ? getCoverUrl(manga.id, fileName, '.256.jpg') 
   //     : null;
   // };
 
-  const renderMangaSection = (title, data, isHero = false) => (
+  const renderMangaSection = (title, data) => (
     <div className="home-section" key={title}>
-      {isHero ? (
-        // Render the HeroSection for the top trending item
-        <HeroSection manga={data[0]} onRead={onSelectManga} />
-      ) : (
-        // Render horizontal scroll list
-        <>
-          <h3>{title}</h3>
-          <div className="horizontal-scroll">
-            {data.map(manga => (
-              <div key={manga.id} className="scroll-item">
-                <MangaCard 
-                  manga={manga} 
-                  onSelect={onSelectManga} 
-                  // FIX: Remove the now-deleted getCover helper and let MangaCard/MangaCard.js handle it
-                  // coverUrl={getCover(manga)} 
-                />
-              </div>
-            ))}
+      <h3>{title}</h3>
+      <div className="horizontal-scroll">
+        {data.map(manga => (
+          <div key={manga.id} className="scroll-item">
+            <MangaCard 
+              manga={manga} 
+              onSelect={onSelectManga} 
+              // FIX: Removed redundant coverUrl prop. MangaCard will now use the correct getCoverUrl internally.
+            />
           </div>
-        </>
-      )}
+        ))}
+      </div>
     </div>
   );
 
   // Separate trending list into Hero (first item) and Scroll (rest)
-  const heroManga = trending.length > 0 ? [trending[0]] : [];
+  const heroManga = trending.length > 0 ? trending[0] : null;
   const trendingScroll = trending.slice(1);
 
   return (
     <div className="home-container">
       
       {/* 1. Hero Section (using the #1 trending item) */}
-      {heroManga.length > 0 && <HeroSection manga={heroManga[0]} onRead={onSelectManga} />}
+      {heroManga && <HeroSection manga={heroManga} onRead={onSelectManga} />}
       
       {/* 2. Section: Trending Now (The rest of the trending list) */}
-      {trendingScroll.length > 0 && renderMangaSection("🔥 Trending Now", trendingScroll)}
+      {trendingScroll.length > 0 && renderMangaSection(<><span>🔥</span> Trending Now</>, trendingScroll)}
 
       {/* 3. Section: Most Popular */}
-      {popular.length > 0 && renderMangaSection("👑 Most Popular", popular)}
+      {popular.length > 0 && renderMangaSection(<><span>👑</span> Most Popular</>, popular)}
 
       {/* 4. Section: Fresh Picks */}
-      {recent.length > 0 && renderMangaSection("✨ Fresh Picks", recent)}
+      {recent.length > 0 && renderMangaSection(<><span>✨</span> Fresh Picks</>, recent)}
     </div>
   );
 };
