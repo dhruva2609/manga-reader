@@ -6,11 +6,11 @@ import { getPopularManga, getTrendingManga, getRecentlyAddedManga } from '../api
 import './Home.css';
 import { getCoverUrl } from '../utils'; // <-- Correct Import
 
-// CORRECT: This is the function that must be used.
+// CORRECT: This function uses the proxy logic from getCoverUrl
 const getCover = (manga) => {
     const cover = manga.relationships.find(r => r.type === 'cover_art');
     const fileName = cover?.attributes?.fileName;
-    // FIX: Use the utility function
+    // FIX: Use the utility function from src/utils/index.js
     return fileName
       ? getCoverUrl(manga.id, fileName, '.256.jpg')
       : null;
@@ -53,7 +53,7 @@ const HomePage = () => {
 
   if (loading) return <div className="loader">Loading Dashboard...</div>;
 
-  // REMOVED: The redundant, incorrect getCover function was removed here.
+  // The incorrect getCover function that was here has been removed.
 
   const renderMangaSection = (title, data) => (
     <div className="home-section" key={title}>
@@ -65,7 +65,7 @@ const HomePage = () => {
                 <MangaCard
                   manga={manga}
                   onSelect={onSelectManga}
-                  // Uses the correct getCover function defined earlier
+                  // This calls the correct, proxy-enabled function defined above
                   coverUrl={getCover(manga)} 
                 />
               </div>
