@@ -22,13 +22,17 @@ export const getMangaTitle = (manga) => {
 export const getMangaImageHost = () => {
     return process.env.NODE_ENV === 'development'
         ? 'https://uploads.mangadex.org' 
-        : '/api/mangadex-img'; // Use the Vercel Proxy function path
+        : '/api/mangadex-img';
 };
 
 /**
  * Constructs the full URL for a manga cover image.
  */
-export const getCoverUrl = (mangaId, fileName, size = '.256.jpg') => {
+export const getCoverUrl = (manga, size = '.256.jpg') => {
+    if (!manga) return null;
     const host = getMangaImageHost();
-    return `${host}/covers/${mangaId}/${fileName}${size}`;
-}
+    const coverRel = manga.relationships?.find((r) => r.type === "cover_art");
+    const fileName = coverRel?.attributes?.fileName;
+    if (!fileName) return null;
+    return `${host}/covers/${manga.id}/${fileName}${size}`;
+};

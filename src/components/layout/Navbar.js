@@ -5,19 +5,17 @@ import MangaSearch from "../ui/MangaSearch";
 import MangaList from "../manga/MangaList";
 import "./Navbar.css";
 
-const Navbar = ({ onSearch, mangas, loading, onSelectManga, clearSearchResults }) => {
+const Navbar = ({ onSearch, mangas, loading, onSelectManga }) => { 
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // State for the full-screen mobile search overlay
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
-  const handleSelectAndClear = useCallback((manga) => {
+  const handleSelect = useCallback((manga) => {
     onSelectManga(manga); 
-    clearSearchResults(); 
     setIsSearchFocused(false);
-    // Close mobile search on selection
     setIsMobileSearchOpen(false);
-  }, [onSelectManga, clearSearchResults]);
+  }, [onSelectManga]);
   
   const showDropdown = isSearchFocused && (loading || (mangas && mangas.length > 0));
 
@@ -51,7 +49,7 @@ const Navbar = ({ onSearch, mangas, loading, onSelectManga, clearSearchResults }
                 <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
         </button>
-        {/* Fix S2: Render search results inside the full-screen mobile overlay */}
+        {/* Render search results inside the full-screen mobile overlay */}
         {(loading || (mangas && mangas.length > 0)) && (
           <div className="mobile-search-results">
             {loading ? (
@@ -59,7 +57,7 @@ const Navbar = ({ onSearch, mangas, loading, onSelectManga, clearSearchResults }
             ) : (
               <MangaList 
                 mangas={mangas} 
-                onSelect={handleSelectAndClear} 
+                onSelect={handleSelect} 
               />
             )}
           </div>
@@ -84,8 +82,7 @@ const Navbar = ({ onSearch, mangas, loading, onSelectManga, clearSearchResults }
           </span>
         </NavLink>
         
-        {/* --- 3. FIX: Mobile Search Icon (Mobile: Next to brand) --- */}
-        {/* This button must be placed here in the JSX flow to be next to the brand on mobile */}
+        {/* --- 3. Mobile Search Icon (Mobile: Next to brand) --- */}
         <button 
             className="mobile-search-icon" 
             onClick={toggleMobileSearch}
@@ -103,7 +100,6 @@ const Navbar = ({ onSearch, mangas, loading, onSelectManga, clearSearchResults }
           onFocus={() => setIsSearchFocused(true)}
           onBlur={(e) => {
             if (!e.currentTarget.contains(e.relatedTarget)) {
-              // Fix B3: Simplify onBlur to avoid race conditions with debounced search
               setIsSearchFocused(false);
             }
           }}
@@ -117,7 +113,7 @@ const Navbar = ({ onSearch, mangas, loading, onSelectManga, clearSearchResults }
               ) : (
                 <MangaList 
                   mangas={mangas} 
-                  onSelect={handleSelectAndClear} 
+                  onSelect={handleSelect} 
                 />
               )}
             </div>
@@ -174,7 +170,7 @@ const Navbar = ({ onSearch, mangas, loading, onSelectManga, clearSearchResults }
             <NavLink to="/history" className="mobile-nav-link" onClick={handleCloseMobileMenu}>History</NavLink>
         </div>
         
-        {/* Fix A1: Removed redundant DarkModeToggle */}
+        {/* Removed redundant DarkModeToggle */}
       </div>
     </nav>
   );

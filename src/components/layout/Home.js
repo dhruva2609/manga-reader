@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import HeroSection from './HeroSection'; // <-- Re-imported HeroSection
+import HeroSection from './HeroSection'; 
 import MangaCard from '../manga/MangaCard';
 import { getPopularManga, getTrendingManga, getRecentlyAddedManga } from '../../api/mangadex';
+import { getCoverUrl } from '../../utils'; // <-- ADD THIS IMPORT
 import './Home.css';
 
 const Home = ({ onSelectManga }) => {
@@ -29,12 +30,12 @@ const Home = ({ onSelectManga }) => {
 
   if (loading) return <div className="loader">Loading Dashboard...</div>;
 
-  // Logic to resolve cover for lists
+  // FIX: Use the proxy-aware utility function for cover URL construction
   const getCover = (manga) => {
     const cover = manga.relationships.find(r => r.type === 'cover_art');
-    // NOTE: MangaDex URL format requires the .256.jpg suffix for small covers
-    return cover 
-      ? `https://uploads.mangadex.org/covers/${manga.id}/${cover.attributes.fileName}.256.jpg` 
+    const fileName = cover?.attributes?.fileName;
+    return fileName
+      ? getCoverUrl(manga.id, fileName, '.256.jpg') // Use the utility
       : null;
   };
 

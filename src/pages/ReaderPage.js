@@ -7,7 +7,7 @@ import { getMangaTitle } from "../utils";
 
 const ReaderPage = () => {
   const { chapterId } = useParams();
-  // FIX: Destructure 'getMangaProgress' instead of the non-existent 'getProgress'
+  // FIX 1: Destructure 'getMangaProgress' (the correct name)
   const { updateProgress, getMangaProgress } = useReadingProgress(); 
 
   const [pages, setPages] = useState([]);
@@ -20,35 +20,41 @@ const ReaderPage = () => {
   useEffect(() => {
     const fetchReaderData = async () => {
       setLoading(true);
-      const { pages, manga, chapterTitle } = await getReaderData(chapterId);
-      
-      setPages(pages);
-      setManga(manga);
-      setChapterTitle(chapterTitle);
-
-      if (manga) {
-        // FIX: Call the correctly destructured function
-        const progress = getMangaProgress(manga.id); 
-        if (progress && progress.chapterId === chapterId) {
-          setPageIdx(progress.pageIdx || 0);
-        }
+      try {
+        const { pages: fetchedPages, manga: fetchedManga, chapterTitle: fetchedChapterTitle } = await getReaderData(chapterId);
+        setPages(fetchedPages);
+        setManga(fetchedManga);
+        setChapterTitle(fetchedChapterTitle);
+      } catch (error) {
+        console.error("Failed to fetch reader data:", error);
+        setPages([]);
+        setManga(null);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
-    // FIX: Dependency array updated to use the correct function name
     fetchReaderData();
-  }, [chapterId, getMangaProgress]);
+  }, [chapterId]);
+
+  useEffect(() => {
+    if (manga) {
+      const progress = getMangaProgress(manga.id);
+      if (progress && progress.lastReadChapterId === chapterId) {
+        setPageIdx(progress.lastReadPage || 0);
+      } else {
+        setPageIdx(0);
+      }
+    }
+  }, [manga, chapterId, getMangaProgress]);
 
 
   // 1. Save reading progress with current page
   useEffect(() => {
-    if (manga && chapterId) {
+    if (manga && chapterId && !loading) {
       updateProgress(manga, chapterId, chapterTitle, pageIdx);
     }
-    // eslint-disable-next-line
-  }, [manga, chapterId, chapterTitle, pageIdx]);
+  }, [manga, chapterId, chapterTitle, pageIdx, updateProgress, loading]);
 
   // 2. Preload next/prev images for smoother navigation
   useEffect(() => {

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getMangaTitle, getCoverUrl } from "../utils";
+
 const FavoritesContext = createContext();
 
 export function FavoritesProvider({ children }) {
@@ -25,32 +25,7 @@ export function FavoritesProvider({ children }) {
 
   const addFavorite = (manga) => {
     if (favorites.some((fav) => fav.id === manga.id)) return;
-
-    const title = getMangaTitle(manga) || manga.title;
-
-    // Robustly find the cover URL
-    let coverUrl = manga.coverUrl || manga.cover; 
-    if (!coverUrl) {
-        const coverRel = manga.relationships?.find((r) => r.type === "cover_art");
-        const fileName = coverRel?.attributes?.fileName;
-        if (fileName) {
-            // FIX: Use the utility function
-            coverUrl = getCoverUrl(manga.id, fileName, '.256.jpg'); 
-        } else {
-            coverUrl = "https://via.placeholder.com/150"; // Fallback placeholder
-        }
-    }
-
-    // Create a clean, standardized object for the favorite item
-    const favoriteManga = {
-      id: manga.id,
-      title: title,
-      coverUrl: coverUrl,
-      attributes: manga.attributes,
-      relationships: manga.relationships,
-    };
-
-    setFavorites((prev) => [...prev, favoriteManga]);
+    setFavorites((prev) => [...prev, manga]);
   };
 
   const removeFavorite = (id) => {

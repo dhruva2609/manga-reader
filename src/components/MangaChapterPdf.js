@@ -13,6 +13,7 @@ const MangaChapterPdf = ({ mangaTitle, chapterTitle, pageImages }) => (
     <Page size="A4" style={styles.page}>
       <Text style={styles.title}>{mangaTitle} - {chapterTitle}</Text>
       <View>
+        {/* CRITICAL: Ensure all images received from the reader page are used */}
         {pageImages.map((img, idx) => (
           <Image key={idx} src={img} style={styles.image} />
         ))}

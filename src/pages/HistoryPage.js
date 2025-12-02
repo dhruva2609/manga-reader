@@ -5,8 +5,8 @@ import HistoryList from '../components/manga/HistoryList';
 import './HistoryPage.css';
 
 const HistoryPage = () => {
-  const { getAllProgress } = useReadingProgress();
-  const history = getAllProgress().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+  const { getReadingHistory } = useReadingProgress();
+  const history = getReadingHistory();
   const navigate = useNavigate();
 
   const handleMangaClick = (manga) => {

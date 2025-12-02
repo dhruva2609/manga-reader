@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// FIX: Simplify BASE_URL to a relative path. 
 const BASE_URL = 
     process.env.NODE_ENV === 'development' 
         ? '' 

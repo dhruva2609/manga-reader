@@ -8,12 +8,7 @@ const HeroSection = ({ manga, onRead }) => {
 
   if (!manga) return null;
 
-  // Logic to find the cover art relationship
-const cover = manga.relationships.find(r => r.type === 'cover_art');
-  const fileName = cover?.attributes?.fileName;  // Construct the high-resolution cover URL (Poster Source)
-  const coverUrl = fileName
-    ? getCoverUrl(manga.id, fileName, '.512.jpg')
-    : '';
+  const coverUrl = getCoverUrl(manga, '.512.jpg');
 
   const title = getMangaTitle(manga);
   const desc = manga.attributes.description?.en 
@@ -39,7 +34,6 @@ const cover = manga.relationships.find(r => r.type === 'cover_art');
           <div className="hero-buttons">
             <button 
               className="hero-btn-primary" 
-              // Functional fix: Navigates to manga details using ID
               onClick={() => onRead(manga)}
             >
               Read Now
