@@ -8,8 +8,7 @@ export default async function handler(req, res) {
   const targetUrl = `${IMAGE_CDN_BASE_URL}${path}`;
 
   const headers = {
-    // CRITICAL FIX: Setting Referer to an empty string is the most reliable way 
-    // to bypass the CDN security check on Vercel without being flagged.
+    // FINAL CRITICAL FIX: Empty Referer is the most reliable way to bypass CDN security
     'Referer': '', 
     'User-Agent': 'MangaReaderAppProxy/1.0',
     'Accept': 'image/*',
@@ -30,9 +29,9 @@ export default async function handler(req, res) {
     res.status(response.status).send(Buffer.from(response.data));
 
   } catch (error) {
-    // If the proxy fails, return a safe fallback.
     console.error(`Image Proxy FAILED to fetch ${targetUrl}. Status: ${error.response?.status} Message:`, error.message);
     
+    // Send a fallback transparent GIF on failure
     res.status(500).setHeader('Content-Type', 'image/gif').send(Buffer.from('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==', 'base64'));
   }
 }

@@ -13,17 +13,16 @@ export const getMangaTitle = (manga) => {
   const firstKey = Object.keys(titles)[0];
   return firstKey ? titles[firstKey] : "Untitled Manga";
 };
-export const isProductionVercel = () => process.env.NODE_ENV !== 'development';
-// --- START NEW/CORRECTED IMAGE HOST UTILITIES ---
+
+// --- CORRECTED IMAGE HOST UTILITIES ---
 
 /**
  * Returns the correct image host based on the environment.
- * Uses the external CDN on localhost, and the Vercel proxy on deployment.
  */
 export const getMangaImageHost = () => {
     return process.env.NODE_ENV === 'development'
         ? 'https://uploads.mangadex.org' 
-        : '/api/mangadex-img'; // Must match your Serverless Function file name
+        : '/api/mangadex-img'; // Use the Vercel Proxy function path
 };
 
 /**
