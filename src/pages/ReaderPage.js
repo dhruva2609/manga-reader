@@ -7,7 +7,6 @@ import { getMangaTitle } from "../utils";
 
 const ReaderPage = () => {
   const { chapterId } = useParams();
-  // FIX 1: Destructure 'getMangaProgress' (the correct name)
   const { updateProgress, getMangaProgress } = useReadingProgress(); 
 
   const [pages, setPages] = useState([]);
@@ -99,45 +98,21 @@ const ReaderPage = () => {
     <div className="reader">
       {/* Page Progress Bar */}
       <div
-        className="reader-progress-bar"
+        className="reader-progress-bar-wrapper" 
         aria-label={`Reading progress: Page ${pageIdx + 1} of ${pages.length}`}
         role="progressbar"
         aria-valuenow={pageIdx + 1}
         aria-valuemin={1}
         aria-valuemax={pages.length}
-        style={{
-          width: "100%",
-          height: "8px",
-          background: "var(--border)",
-          borderRadius: "4px",
-          marginBottom: "1.2rem",
-          position: "relative",
-          overflow: "hidden",
-        }}
       >
         <div
+          className="reader-progress-bar-fill"
           style={{
             width: `${pageProgress}%`,
-            height: "100%",
-            background: "linear-gradient(90deg, var(--accent), var(--accent2))",
-            borderRadius: "4px",
-            transition: "width 0.3s",
           }}
         />
         <span
-          style={{
-            position: "absolute",
-            right: 8,
-            top: "50%",
-            transform: "translateY(-50%)",
-            fontSize: "12px",
-            color: "var(--text-muted)",
-            fontWeight: 500,
-            background: "rgba(255,255,255,0.8)",
-            padding: "0 4px",
-            borderRadius: "2px",
-            pointerEvents: "none",
-          }}
+          className="reader-progress-bar-text"
         >
           Page {pageIdx + 1} / {pages.length}
         </span>
@@ -145,15 +120,9 @@ const ReaderPage = () => {
 
       {/* Toolbar with title and download button */}
       <div
-        className="reader-toolbar"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 18,
-        }}
+        className="reader-toolbar" 
       >
-        <span style={{ fontWeight: 600 }}>
+        <span>
           {mangaTitle} {chapterTitle ? `- ${chapterTitle}` : ""}
         </span>
         <DownloadPdfButton
@@ -179,13 +148,7 @@ const ReaderPage = () => {
 
       {/* Navigation Controls */}
       <div
-        className="page-controls"
-        style={{
-          margin: "1.5rem 0",
-          display: "flex",
-          justifyContent: "center",
-          gap: "2rem",
-        }}
+        className="page-controls" 
       >
         <button
           onClick={() => setPageIdx((i) => Math.max(i - 1, 0))}

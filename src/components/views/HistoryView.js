@@ -3,8 +3,10 @@ import { useReadingProgress } from '../../context/ReadingProgressContext';
 import HistoryList from '../manga/HistoryList'; // Assumes HistoryList is built
 
 const HistoryView = ({ onSelectManga }) => {
-  const { getAllProgress } = useReadingProgress();
-  const history = getAllProgress().sort((a, b) => b.updatedAt - a.updatedAt);
+  // FIX: Use the exported function name getReadingHistory()
+  const { getReadingHistory } = useReadingProgress();
+  // FIX: getReadingHistory now returns the sorted array, so remove redundant sorting logic.
+  const history = getReadingHistory();
 
   return (
     <div className="history-view-container">
