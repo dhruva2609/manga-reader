@@ -9,7 +9,6 @@ export default async function handler(req, res) {
 
   const headers = {
     // FINAL CRITICAL FIX: Empty Referer is the most reliable way to bypass CDN security
-    'Referer': '', 
     'User-Agent': 'MangaReaderAppProxy/1.0',
     'Accept': 'image/*',
   };
