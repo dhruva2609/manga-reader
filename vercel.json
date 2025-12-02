@@ -17,7 +17,7 @@
     },
     {
       "source": "/api/mangadex-img/(.*)",
-      "destination": "https://uploads.mangadex.org/$1"
+      "destination": "/api/mangadex-img" 
     }
   ]
 }

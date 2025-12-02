@@ -1,57 +1,47 @@
-// dhruva2609/manga-reader/manga-reader-f58796ab705a3c3bbf7e7f41f9a569d6ca35e059/api/mangadex-proxy.js
-const axios = require('axios');
+import axios from 'axios';
 
-module.exports = async (req, res) => {
-    // FIX: The slug parameter from the rewrite rule (vercel.json) is a single path string
-    // (e.g., 'manga' or 'at-home/server/chapterId') and should be used directly.
-    const { slug } = req.query;
-    let url = `https://api.mangadex.org/${slug}`;
+const IMAGE_CDN_BASE_URL = 'https://uploads.mangadex.org';
 
-    // Reconstruct query parameters manually to handle array-style params (e.g., includes[])
-    // which are crucial for MangaDex endpoints.
-    const queryParams = new URLSearchParams();
+export default async function handler(req, res) {
+  // FIX 1: Use req.query[0] if the rewrite worked as intended (capturing path as query param '0').
+  // However, to be more robust, we'll try to reconstruct the path using URL:
+  const path = req.url.replace('/api/mangadex-img', '');
+  
+  // Check if the path starts with a slash, if not, add it (Vercel routes usually include it)
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const targetUrl = `${IMAGE_CDN_BASE_URL}${normalizedPath}`;
 
-    for (const key in req.query) {
-        // Skip the rewrite's own slug parameter
-        if (key !== 'slug') { 
-            const value = req.query[key];
-            if (Array.isArray(value)) {
-                // Append multiple values for keys like includes[]
-                value.forEach(v => queryParams.append(key, v));
-            } else {
-                queryParams.set(key, value);
-            }
-        }
+  const headers = {
+    // Setting a friendly User-Agent is necessary for some CDNs/APIs
+    'User-Agent': 'MangaReaderAppProxy/1.0',
+    'Accept': 'image/*',
+    // FIX 2 (CRITICAL): The absence of the Referer header is sometimes required 
+    // to bypass CDN denial based on cross-origin context.
+  };
+  
+  try {
+    const response = await axios.get(targetUrl, {
+      responseType: 'arraybuffer', 
+      headers: headers
+    });
+
+    // Set headers and send image data
+    const contentType = response.headers['content-type'] || 'image/jpeg';
+    
+    res.setHeader('Content-Type', contentType);
+    // Use the actual caching headers from the source if available, otherwise suggest caching
+    if (response.headers['cache-control']) {
+        res.setHeader('Cache-Control', response.headers['cache-control']);
+    } else {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable'); 
     }
+    
+    res.status(response.status).send(Buffer.from(response.data));
+
+  } catch (error) {
+    console.error(`Image Proxy FAILED to fetch ${targetUrl}. Status: ${error.response?.status} Message:`, error.message);
     
-    if (queryParams.toString()) {
-        url += `?${queryParams.toString()}`;
-    }
-
-    try {
-        const response = await axios({
-            method: req.method,
-            url: url,
-            // Pass the request body for POST/PUT/PATCH requests
-            data: req.body,
-            headers: {
-                // MangaDex prefers a User-Agent header
-                'User-Agent': 'Manga-Reader/1.0',
-            }
-        });
-
-        // Forward headers and status
-        res.status(response.status);
-        if (response.headers['content-type']) {
-            res.setHeader('Content-Type', response.headers['content-type']);
-        }
-
-        res.send(response.data);
-    } catch (error) {
-        if (error.response) {
-            res.status(error.response.status).send(error.response.data);
-        } else {
-            res.status(500).send({ message: 'Error proxying to MangaDex API' });
-        }
-    }
-};
+    // Send a fallback transparent GIF on failure
+    res.status(500).setHeader('Content-Type', 'image/gif').send(Buffer.from('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==', 'base64'));
+  }
+}
