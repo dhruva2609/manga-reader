@@ -151,8 +151,6 @@ const ReaderPage = () => {
           justifyContent: "space-between",
           alignItems: "center",
           marginBottom: 18,
-          // FIX: Ensure the toolbar takes up the full width of its parent container
-          width: "100%", 
         }}
       >
         <span style={{ fontWeight: 600 }}>
