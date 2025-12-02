@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import HeroSection from './HeroSection'; 
 import MangaCard from '../manga/MangaCard';
 import { getPopularManga, getTrendingManga, getRecentlyAddedManga } from '../../api/mangadex';
-import { getCoverUrl } from '../../utils'; // <-- ADD THIS IMPORT
+import { getCoverUrl } from '../../utils'; // <-- KEEP THIS IMPORT
 import './Home.css';
 
 const Home = ({ onSelectManga }) => {
@@ -30,14 +30,15 @@ const Home = ({ onSelectManga }) => {
 
   if (loading) return <div className="loader">Loading Dashboard...</div>;
 
-  // FIX: Use the proxy-aware utility function for cover URL construction
-  const getCover = (manga) => {
-    const cover = manga.relationships.find(r => r.type === 'cover_art');
-    const fileName = cover?.attributes?.fileName;
-    return fileName
-      ? getCoverUrl(manga.id, fileName, '.256.jpg') // Use the utility
-      : null;
-  };
+  // FIX: REMOVE the redundant getCover function. 
+  // MangaCard will call the globally fixed getCoverUrl(manga) with no extra params.
+  // const getCover = (manga) => {
+  //   const cover = manga.relationships.find(r => r.type === 'cover_art');
+  //   const fileName = cover?.attributes?.fileName;
+  //   return fileName
+  //     ? getCoverUrl(manga.id, fileName, '.256.jpg') // Use the utility
+  //     : null;
+  // };
 
   const renderMangaSection = (title, data, isHero = false) => (
     <div className="home-section" key={title}>
@@ -54,7 +55,8 @@ const Home = ({ onSelectManga }) => {
                 <MangaCard 
                   manga={manga} 
                   onSelect={onSelectManga} 
-                  coverUrl={getCover(manga)}
+                  // FIX: Remove the now-deleted getCover helper and let MangaCard/MangaCard.js handle it
+                  // coverUrl={getCover(manga)} 
                 />
               </div>
             ))}

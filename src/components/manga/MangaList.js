@@ -15,9 +15,11 @@ const MangaList = ({ mangas, onSelect }) => {
           to={`/manga/${manga.id}`} 
           key={manga.id} 
           className="manga-card-link"
-          onClick={() => onSelect(manga)}
+          // FIX: Ensure onSelect is called here (clears search), and pass a no-op to MangaCard
+          onClick={() => onSelect(manga)} 
         >
-          <MangaCard manga={manga} />
+          {/* FIX: Pass null/undefined as onSelect to MangaCard to prevent double-nav/double-state-clear */}
+          <MangaCard manga={manga} onSelect={undefined} /> 
         </Link>
       ))}
     </div>
