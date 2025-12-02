@@ -136,8 +136,10 @@
 /* Grid layout for the list of favorite manga */
 .favorites-grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 2rem 1.5rem;
+  /* FIX: Increase minimum column size for bigger cards (200px) */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  /* FIX: Increased gap for better spacing */
+  gap: 2.5rem 1.8rem; 
   padding: 1rem;
 }
 
@@ -164,14 +166,16 @@
 
 .favorite-grid-item {
   transition: transform 0.3s ease;
+  /* FIX: Ensure this is a flex container for alignment */
+  display: flex;
+  flex-direction: column;
 }
 
 .favorite-grid-item:hover {
   transform: translateY(-8px);
 }
 
-/* 
-  This is the key part: We are overriding the default styles 
+/* This is the key part: We are overriding the default styles 
   of the MangaCard component when it's inside our grid.
 */
 .favorite-grid-item .manga-card {
@@ -190,7 +194,8 @@
 /* Style the cover image */
 .favorite-grid-item .manga-card img {
   width: 100%;
-  height: 260px;
+  /* FIX: Increased image height for bigger cards */
+  height: 300px; 
   object-fit: cover;
   border-radius: 12px;
   margin-bottom: 0.75rem;
@@ -231,12 +236,14 @@
 
 @media (max-width: 768px) {
   .favorites-grid-container {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    /* FIX: Adjusted minmax for smaller screens */
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 1.5rem 1rem;
   }
 
   .favorite-grid-item .manga-card img {
-    height: 200px;
+    /* FIX: Adjusted responsive image height */
+    height: 220px;
   }
 }
 

@@ -37,28 +37,34 @@
 }
 
 .history-list-item {
-  /* FIX: Add a card style for prominence */
+  /* FIX: Use flex layout with padding right for timestamp */
+  position: relative; 
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 1rem;
+  /* FIX: Increased vertical padding and added space for timestamp/details in right bottom corner */
+  padding: 1rem 1rem 2.5rem 1rem; 
   
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Align image and text top */
   gap: 1.5rem;
   cursor: pointer;
+  min-height: 105px; 
   
   transition: all 0.2s ease-in-out;
 }
 
 .history-list-item:hover {
-  /* FIX: Add hover effect for better list look */
   border-color: var(--accent);
   box-shadow: 0 4px 15px rgba(81, 66, 252, 0.1);
   transform: translateY(-2px);
 }
 
-/* FIX: Override the MangaCard image size for a larger poster */
+/* FIX: Ensure the MangaCard image remains correct size */
+.history-list-item .manga-card {
+    flex-shrink: 0;
+}
+
 .history-list-item .manga-card img {
   width: 70px;
   height: 105px;
@@ -69,7 +75,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* FIX: The MangaCard 'list' variant includes the title, which is redundant here. Hide it. */
+/* The MangaCard title should be hidden here */
 .history-list-item .manga-card-title {
   display: none;
 }
@@ -78,6 +84,8 @@
   flex-grow: 1;
   color: var(--text-main); 
   overflow: hidden;
+  /* FIX: Ensure details container respects the new padding */
+  padding-right: 180px; 
 }
 
 .history-item-title {
@@ -95,37 +103,47 @@
   font-size: 1rem;
   color: var(--text-muted);
   margin: 0;
+  /* FIX: Added space below the chapter title */
+  margin-bottom: 0.5rem; 
 }
 
 .history-item-last-read {
+  /* FIX: Absolute positioning to bottom right corner */
+  position: absolute;
+  bottom: 0.75rem; 
+  right: 1rem;
   font-size: 0.9rem;
   color: var(--text-muted);
-  margin-left: auto;
-  text-align: right;
   white-space: nowrap;
-  padding-left: 1rem;
   flex-shrink: 0;
+  text-align: right;
+  padding-left: 1rem;
+  margin: 0;
 }
 
 @media (max-width: 768px) {
   .history-list-item {
+    /* Stack layout on small screens */
     flex-wrap: wrap;
     gap: 0.5rem 1rem;
+    padding: 1rem; /* Reset padding for stacking */
   }
 
   .history-item-details {
     flex-grow: 1;
-    min-width: 150px; /* Prevent it from getting too squished */
+    min-width: 150px; 
+    padding-right: 0; /* Remove restriction */
   }
   
   .history-item-last-read {
+    /* Reset absolute positioning for stacking */
+    position: static; 
     margin-left: 0;
     text-align: left;
     width: 100%;
     padding-left: 0;
     font-size: 0.8rem;
     margin-top: 0.25rem;
-    /* Position it relative to the details, not the card */
     order: 3; 
   }
 
