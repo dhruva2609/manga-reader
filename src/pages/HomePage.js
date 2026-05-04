@@ -39,8 +39,8 @@ const HomePage = () => {
 
   if (loading) return <div className="loader">Loading Dashboard...</div>;
 
-  const renderMangaSection = (title, data) => (
-    <div className="home-section" key={title}>
+  const renderMangaSection = (title, data, sectionKey) => (
+    <div className="home-section" key={sectionKey}>
         <h3>{title}</h3>
         <div className="horizontal-scroll">
           {data.map(manga => (
@@ -59,11 +59,11 @@ const HomePage = () => {
       
       {heroManga && <HeroSection manga={heroManga} onRead={onSelect} />}
       
-      {trending.length > 1 && renderMangaSection(<><span>🔥</span> Trending Now</>, trending.slice(1))}
+      {trending.length > 1 && renderMangaSection(<><span role="img" aria-label="fire">🔥</span> Trending Now</>, trending.slice(1), "trending")}
 
-      {popular.length > 0 && renderMangaSection(<><span>👑</span> Most Popular</>, popular)}
+      {popular.length > 0 && renderMangaSection(<><span role="img" aria-label="crown">👑</span> Most Popular</>, popular, "popular")}
 
-      {recent.length > 0 && renderMangaSection(<><span>✨</span> Fresh Picks</>, recent)}
+      {recent.length > 0 && renderMangaSection(<><span role="img" aria-label="sparkles">✨</span> Fresh Picks</>, recent, "recent")}
     </div>
   );
 };

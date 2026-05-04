@@ -7,7 +7,6 @@ import ChapterList from '../components/reader/ChapterList';
 
 const MangaPage = () => {
   const { mangaId } = useParams();
-  //const navigate = useNavigate();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
   const [manga, setManga] = useState(null);
@@ -17,26 +16,43 @@ const MangaPage = () => {
 
   useEffect(() => {
     const fetchDetails = async () => {
+      console.log('MangaPage: Fetching details for ID:', mangaId);
       setLoading(true);
-      const [mangaData, chaptersData] = await Promise.all([
-        getMangaDetails(mangaId),
-        getChapters(mangaId)
-      ]);
+      try {
+        const [mangaData, chaptersData] = await Promise.all([
+          getMangaDetails(mangaId),
+          getChapters(mangaId)
+        ]);
+        
+        console.log('MangaPage: Manga Data:', mangaData ? 'Found' : 'Null');
+        console.log('MangaPage: Chapters Count:', chaptersData ? chaptersData.length : 0);
 
-      if (mangaData) {
-        mangaData.title = getMangaTitle(mangaData);
-        setManga(mangaData);
+        if (mangaData) {
+          mangaData.title = getMangaTitle(mangaData);
+          setManga(mangaData);
+        }
+        if (chaptersData) {
+          setChapters(chaptersData);
+        }
+      } catch (err) {
+        console.error('MangaPage: Error in fetchDetails:', err);
+      } finally {
+        setLoading(false);
       }
-      if (chaptersData) {
-        setChapters(chaptersData);
-      }
-      setLoading(false);
     };
-    fetchDetails();
+    
+    if (mangaId) {
+      fetchDetails();
+    }
   }, [mangaId]);
 
   if (loading) return <div className="loader">Loading Manga Details...</div>;
-  if (!manga) return <h1>Manga Not Found.</h1>;
+  if (!manga) return (
+    <div className="manga-not-found">
+      <h1>Manga Not Found.</h1>
+      <p>ID requested: {mangaId}</p>
+    </div>
+  );
 
   const handleToggleFavorite = () => {
     isFavorite(manga.id) ? removeFavorite(manga.id) : addFavorite(manga);

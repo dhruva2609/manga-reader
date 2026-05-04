@@ -6,51 +6,91 @@ import { proxyImageUrl } from '../utils';
 // Both environments use the same /api/mangadex prefix.
 const BASE_URL = '/api/mangadex';
 
+/**
+ * Custom params serializer: MangaDex v5 requires bracket-style arrays
+ * (e.g. includes[]=cover_art&includes[]=author) but axios defaults to
+ * indexed style (includes[0]=cover_art) which MangaDex rejects.
+ */
+const serializeParams = (params) => {
+    const parts = [];
+    for (const key in params) {
+        const value = params[key];
+        if (value === undefined || value === null) continue;
+
+        if (Array.isArray(value)) {
+            // MangaDex expects key[]=val
+            value.forEach((v) => {
+                parts.push(`${encodeURIComponent(key)}[]=${encodeURIComponent(v)}`);
+            });
+        } else if (typeof value === 'object') {
+            // Handle nested objects like order: { chapter: 'asc' }
+            for (const subKey in value) {
+                parts.push(
+                    `${encodeURIComponent(key)}[${encodeURIComponent(subKey)}]=${encodeURIComponent(value[subKey])}`
+                );
+            }
+        } else {
+            parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+        }
+    }
+    return parts.join('&');
+};
+
+// Shared axios instance with correct serializer (Axios 1.x format)
+const api = axios.create({
+    paramsSerializer: {
+        serialize: serializeParams
+    }
+});
+
 export const searchManga = async (query, includedTags = []) => {
-    const url = `${BASE_URL}/manga`;
-    console.log(`DEBUG: Calling searchManga URL: ${url}`); // <-- DEBUG
     try {
-        const res = await axios.get(url, {
+        const res = await api.get(`${BASE_URL}/manga`, {
             params: {
                 title: query,
                 limit: 10,
                 includes: ['cover_art'],
-                includedTags: includedTags,
+                includedTags,
                 contentRating: ['safe', 'suggestive', 'erotica'],
-            }
+                hasAvailableChapters: 'true',
+                availableTranslatedLanguage: ['en'],
+            },
         });
-        console.log('DEBUG: searchManga successful, returned:', res.data.data.length, 'manga'); // <-- DEBUG
         return res.data.data;
     } catch (error) {
-        console.error('searchManga error:', error);
+        console.error('searchManga error:', error.message);
         return [];
     }
 };
 
 export const getMangaDetails = async (mangaId) => {
+    console.log(`getMangaDetails: Requesting ${BASE_URL}/manga/${mangaId}`);
     try {
-        const res = await axios.get(`${BASE_URL}/manga/${mangaId}`, {
-            params: { includes: ['cover_art', 'author'] }
+        const res = await api.get(`${BASE_URL}/manga/${mangaId}`, {
+            params: { includes: ['cover_art', 'author', 'artist'] },
         });
         return res.data.data;
     } catch (error) {
-        console.error('getMangaDetails error:', error);
+        console.error('getMangaDetails error:', error.response?.data || error.message);
         return null;
     }
 };
 
 export const getChapters = async (mangaId) => {
+    console.log(`getChapters: Requesting feed for ${mangaId}`);
     try {
-        const res = await axios.get(`${BASE_URL}/manga/${mangaId}/feed`, {
+        const res = await api.get(`${BASE_URL}/manga/${mangaId}/feed`, {
             params: {
                 translatedLanguage: ['en'],
                 order: { chapter: 'asc' },
-                limit: 100
-            }
+                limit: 500,
+                offset: 0,
+                contentRating: ['safe', 'suggestive', 'erotica'],
+            },
         });
         return res.data.data;
     } catch (error) {
-        console.error('getChapters error:', error);
+        console.error('getChapters error:', error.response?.data || error.message);
         return [];
     }
 };
@@ -60,131 +100,108 @@ export const getChapterPages = async (chapterId) => {
         console.error('getChapterPages error: chapterId is undefined');
         return [];
     }
-    const url = `${BASE_URL}/at-home/server/${chapterId}`;
-    console.log(`DEBUG: Calling getChapterPages URL: ${url}`); // <-- DEBUG
-
     try {
-        // Step 1: Get the host server and image hash/files from the API
-        const res = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
-        const { baseUrl, chapter } = res.data;;
+        const res = await api.get(`${BASE_URL}/at-home/server/${chapterId}`);
+        const { baseUrl, chapter } = res.data;
 
-        console.log('DEBUG: Chapter Server Response Data (partial):', {
-            baseUrl: res.data.baseUrl,
-            hash: res.data.chapter.hash,
-            dataLength: res.data.chapter.data.length
-        }); // <-- DEBUG
-
-        // Ensure data is valid
         if (!chapter || !chapter.data || !chapter.hash) {
             console.error('getChapterPages error: Invalid chapter data', res.data);
             return [];
         }
 
-        // Route all page images through the proxy (works in both dev and prod)
-        const pageUrls = chapter.data.map((file) =>
+        return chapter.data.map((file) =>
             proxyImageUrl(`${baseUrl}/data/${chapter.hash}/${file}`)
         );
-        console.log('DEBUG: First Page URL constructed:', pageUrls[0]);
-        return pageUrls;
     } catch (error) {
-        if (error.response && error.response.status === 404) {
-            console.error(`getChapterPages error: Chapter ${chapterId} not found (404)`);
-        } else {
-            console.error('getChapterPages error:', error);
-        }
+        console.error('getChapterPages error:', error.message);
         return [];
     }
 };
 
 export const getReaderData = async (chapterId) => {
-    const serverUrl = `${BASE_URL}/at-home/server/${chapterId}`;
-    console.log(`DEBUG: Calling getReaderData Server URL: ${serverUrl}`); // <-- DEBUG
-
     try {
-        // Step 1: Get pages list via proxy
-        const serverRes = await axios.get(serverUrl);
+        // Step 1: Get page image list
+        const serverRes = await api.get(`${BASE_URL}/at-home/server/${chapterId}`);
         const { baseUrl, chapter: chapterData } = serverRes.data;
-
-        // Route all page images through the proxy (works in both dev and prod)
-        const pageUrls = chapterData.data.map(file =>
+        const pageUrls = chapterData.data.map((file) =>
             proxyImageUrl(`${baseUrl}/data/${chapterData.hash}/${file}`)
         );
 
-        // Step 2 & 3: Get chapter and manga details
-        const chapterUrl = `${BASE_URL}/chapter/${chapterId}`;
-        const mangaUrl = `${BASE_URL}/manga/${chapterId}`;
-        console.log(`DEBUG: Calling Chapter URL: ${chapterUrl}`); // <-- DEBUG
+        // Step 2: Get chapter details to find the manga ID
+        const chapterRes = await api.get(`${BASE_URL}/chapter/${chapterId}`);
+        const mangaId = chapterRes.data.data.relationships.find((r) => r.type === 'manga').id;
 
-        const chapterRes = await axios.get(chapterUrl);
-        const mangaId = chapterRes.data.data.relationships.find(r => r.type === 'manga').id;
-
-        console.log(`DEBUG: Calling Manga Details URL: ${mangaUrl} with ID ${mangaId}`); // <-- DEBUG
-        const mangaRes = await axios.get(`${BASE_URL}/manga/${mangaId}`, {
-            params: { includes: ['cover_art'] }
+        // Step 3: Get manga details for title/cover
+        const mangaRes = await api.get(`${BASE_URL}/manga/${mangaId}`, {
+            params: { includes: ['cover_art'] },
         });
 
-        console.log('DEBUG: getReaderData completed successfully.'); // <-- DEBUG
         return {
             pages: pageUrls,
             manga: mangaRes.data.data,
-            chapterTitle: chapterRes.data.data.attributes.title || `Chapter ${chapterRes.data.data.attributes.chapter}`
+            chapterTitle:
+                chapterRes.data.data.attributes.title ||
+                `Chapter ${chapterRes.data.data.attributes.chapter}`,
         };
     } catch (error) {
-        console.error('getReaderData error:', error);
+        console.error('getReaderData error:', error.message);
         return { pages: [], manga: null, chapterTitle: '' };
     }
 };
 
 export const getPopularManga = async () => {
     try {
-        const res = await axios.get(`${BASE_URL}/manga`, {
+        const res = await api.get(`${BASE_URL}/manga`, {
             params: {
                 limit: 20,
                 includes: ['cover_art'],
                 order: { followedCount: 'desc' },
                 contentRating: ['safe', 'suggestive'],
-                hasAvailableChapters: 'true'
-            }
+                hasAvailableChapters: 'true',
+                availableTranslatedLanguage: ['en'],
+            },
         });
         return res.data.data;
     } catch (error) {
-        console.error('getPopularManga error:', error);
+        console.error('getPopularManga error:', error.message);
         return [];
     }
 };
 
 export const getTrendingManga = async () => {
     try {
-        const res = await axios.get(`${BASE_URL}/manga`, {
+        const res = await api.get(`${BASE_URL}/manga`, {
             params: {
                 limit: 10,
                 includes: ['cover_art', 'author'],
                 order: { followedCount: 'desc' },
                 contentRating: ['safe', 'suggestive'],
-                hasAvailableChapters: 'true'
-            }
+                hasAvailableChapters: 'true',
+                availableTranslatedLanguage: ['en'],
+            },
         });
         return res.data.data;
     } catch (error) {
-        console.error('getTrendingManga error:', error);
+        console.error('getTrendingManga error:', error.message);
         return [];
     }
 };
 
 export const getRecentlyAddedManga = async () => {
     try {
-        const res = await axios.get(`${BASE_URL}/manga`, {
+        const res = await api.get(`${BASE_URL}/manga`, {
             params: {
                 limit: 15,
                 includes: ['cover_art'],
                 order: { createdAt: 'desc' },
                 contentRating: ['safe', 'suggestive'],
-                hasAvailableChapters: 'true'
-            }
+                hasAvailableChapters: 'true',
+                availableTranslatedLanguage: ['en'],
+            },
         });
         return res.data.data;
     } catch (error) {
-        console.error('getRecentlyAddedManga error:', error);
+        console.error('getRecentlyAddedManga error:', error.message);
         return [];
     }
 };

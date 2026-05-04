@@ -1,56 +1,52 @@
-// dhruva2609/manga-reader/manga-reader-f58796ab705a3c3bbf7e7f41f9a569d6ca35e059/api/mangadex-proxy.js
 const axios = require('axios');
 
 module.exports = async (req, res) => {
-    // FIX: The slug parameter from the rewrite rule (vercel.json) is a single path string
-    // (e.g., 'manga' or 'at-home/server/chapterId') and should be used directly.
+    // The 'path' param comes from the vercel.json rewrite rule:
+    //   /api/mangadex/:path*  →  /api/mangadex-proxy?path=:path*
     const { path } = req.query;
-    let url = `https://api.mangadex.org/${path}`;
-    // Reconstruct query parameters manually to handle array-style params (e.g., includes[])
-    // which are crucial for MangaDex endpoints.
-    const queryParams = new URLSearchParams();
+    if (!path) return res.status(400).json({ message: 'Missing path parameter' });
 
-    for (const key in req.query) {
-        // Skip the rewrite's own slug parameter
-        if (key !== 'path') {
-            const value = req.query[key];
-            if (Array.isArray(value)) {
-                // Append multiple values for keys like includes[]
-                value.forEach(v => queryParams.append(key, v));
-            } else {
-                queryParams.set(key, value);
-            }
-        }
-    }
+    // Reconstruct the raw query string, excluding our internal 'path' param.
+    // We pass the query string as-is so MangaDex receives the exact param format
+    // the client sent (e.g. includes[]=cover_art&order[chapter]=asc).
+    const rawQuery = req.url.split('?')[1] || '';
+    const forwardedQuery = rawQuery
+        .split('&')
+        .filter((part) => !part.startsWith('path='))
+        .join('&');
 
-    if (queryParams.toString()) {
-        url += `?${queryParams.toString()}`;
-    }
+    const targetUrl = `https://api.mangadex.org/${path}${forwardedQuery ? `?${forwardedQuery}` : ''}`;
 
     try {
         const response = await axios({
             method: req.method,
-            url: url,
-            // Pass the request body for POST/PUT/PATCH requests
+            url: targetUrl,
             data: req.body,
             headers: {
-                // MangaDex prefers a User-Agent header
                 'User-Agent': 'Manga-Reader/1.0',
-            }
+                'Content-Type': req.headers['content-type'] || 'application/json',
+            },
+            // Return raw data so we can pipe it straight through
+            responseType: 'arraybuffer',
+            validateStatus: () => true, // forward all status codes
         });
 
-        // Forward headers and status
         res.status(response.status);
+
+        // Forward relevant response headers
         if (response.headers['content-type']) {
             res.setHeader('Content-Type', response.headers['content-type']);
+        }
+        if (response.headers['x-ratelimit-limit']) {
+            res.setHeader('X-RateLimit-Limit', response.headers['x-ratelimit-limit']);
+        }
+        if (response.headers['x-ratelimit-remaining']) {
+            res.setHeader('X-RateLimit-Remaining', response.headers['x-ratelimit-remaining']);
         }
 
         res.send(response.data);
     } catch (error) {
-        if (error.response) {
-            res.status(error.response.status).send(error.response.data);
-        } else {
-            res.status(500).send({ message: 'Error proxying to MangaDex API' });
-        }
+        console.error('MangaDex proxy error:', error.message);
+        res.status(500).json({ message: 'Error proxying to MangaDex API', detail: error.message });
     }
 };

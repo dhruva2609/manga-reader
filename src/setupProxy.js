@@ -5,57 +5,55 @@
  * Proxies MangaDex API calls and image CDN requests through localhost,
  * eliminating CORS and Referer restrictions.
  *
- * In production (Vercel), vercel.json handles the same routing.
+ * IMPORTANT: If you modify this file, you MUST RESTART the dev server (npm start).
  */
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function (app) {
   // ── 1. MangaDex REST API ──────────────────────────────────────────────────
-  // /api/mangadex/manga?... → https://api.mangadex.org/manga?...
   app.use(
     '/api/mangadex',
     createProxyMiddleware({
       target: 'https://api.mangadex.org',
       changeOrigin: true,
       pathRewrite: { '^/api/mangadex': '' }, // strip prefix
-      headers: { 'User-Agent': 'Manga-Reader/1.0' },
+      headers: { 
+        'User-Agent': 'Manga-Reader/1.0',
+        'Referer': 'https://mangadex.org'
+      },
     })
   );
 
   // ── 2. Manga images (covers + chapter pages) ──────────────────────────────
-  // /manga-image?url=<encoded CDN url>  →  actual CDN image
-  //
-  // We use a custom Express handler (not http-proxy-middleware) because we
-  // need to dynamically pick the target host from the query string, and
-  // http-proxy-middleware v2's `router` doesn't support that cleanly for
-  // query-param based routing.
   app.use('/manga-image', async (req, res) => {
     const raw = req.query.url;
     if (!raw) return res.status(400).send('Missing ?url= param');
 
     const targetUrl = decodeURIComponent(raw);
 
-    // Only allow MangaDex CDN domains
-    const allowed = [
-      'https://uploads.mangadex.org',
-      'https://s5.mangadex.org',
-      'https://s4.mangadex.org',
-      'https://s3.mangadex.org',
-      'https://s2.mangadex.org',
-      'https://s1.mangadex.org',
-    ];
-    if (!allowed.some((p) => targetUrl.startsWith(p))) {
-      return res.status(403).send('Forbidden domain');
-    }
-
     try {
-      // Use node-fetch or http.get — axios is available as a project dep
+      const urlObj = new URL(targetUrl);
+      const hostname = urlObj.hostname;
+
+      // Allow any mangadex.org or mangadex.network subdomain
+      const isAllowed = 
+        hostname.endsWith('.mangadex.org') || 
+        hostname.endsWith('.mangadex.network') || 
+        hostname === 'mangadex.org' ||
+        hostname === 'mangadex.network';
+
+      if (!isAllowed) {
+        console.error('[image-proxy] Blocked forbidden domain:', hostname);
+        return res.status(403).send('Forbidden domain');
+      }
+
       const axios = require('axios');
       const response = await axios.get(targetUrl, {
         responseType: 'arraybuffer',
         headers: {
-          Referer: 'https://mangadex.org',
-          'User-Agent': 'Manga-Reader/1.0',
+          'Referer': 'https://mangadex.org',
+          'Origin': 'https://mangadex.org',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         },
         timeout: 20000,
       });
@@ -65,8 +63,9 @@ module.exports = function (app) {
       res.status(200).send(response.data);
     } catch (e) {
       const status = e.response?.status || 500;
-      console.error('[image-proxy] error:', e.message);
-      res.status(status).send('Image proxy error');
+      console.error(`[image-proxy] Failed to fetch ${targetUrl}:`, e.message);
+      // If the target returns 403, it means our headers (Referer/User-Agent) were rejected
+      res.status(status).send('Image proxy error: ' + e.message);
     }
   });
 };
