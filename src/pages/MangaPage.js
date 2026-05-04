@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { getMangaDetails, getChapters } from '../api/mangadex';
 import { useFavorites } from '../context/FavoritesContext';
 import { getMangaTitle, getCoverUrl } from '../utils';
