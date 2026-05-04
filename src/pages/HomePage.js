@@ -21,8 +21,8 @@ const HomePage = () => {
           getTrendingManga(),
           getRecentlyAddedManga()
         ]);
-        setPopular(popularData || []); 
-        setTrending(trendData || []); 
+        setPopular(popularData || []);
+        setTrending(trendData || []);
         setRecent(recentData || []);
       } catch (error) {
         console.error("Home page API fetch failed:", error);
@@ -41,14 +41,14 @@ const HomePage = () => {
 
   const renderMangaSection = (title, data, sectionKey) => (
     <div className="home-section" key={sectionKey}>
-        <h3>{title}</h3>
-        <div className="horizontal-scroll">
-          {data.map(manga => (
-            <div key={manga.id} className="scroll-item" onClick={() => onSelect(manga)}>
-              <MangaCard manga={manga} onSelect={onSelect} />
-            </div>
-          ))}
-        </div>
+      <h3>{title}</h3>
+      <div className="horizontal-scroll">
+        {data.map(manga => (
+          <div key={manga.id} className="scroll-item" onClick={() => onSelect(manga)}>
+            <MangaCard manga={manga} onSelect={onSelect} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 
@@ -56,9 +56,9 @@ const HomePage = () => {
 
   return (
     <div className="home-container">
-      
+
       {heroManga && <HeroSection manga={heroManga} onRead={onSelect} />}
-      
+
       {trending.length > 1 && renderMangaSection(<><span role="img" aria-label="fire">🔥</span> Trending Now</>, trending.slice(1), "trending")}
 
       {popular.length > 0 && renderMangaSection(<><span role="img" aria-label="crown">👑</span> Most Popular</>, popular, "popular")}

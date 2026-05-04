@@ -23,7 +23,7 @@ const MangaPage = () => {
           getMangaDetails(mangaId),
           getChapters(mangaId)
         ]);
-        
+
         console.log('MangaPage: Manga Data:', mangaData ? 'Found' : 'Null');
         console.log('MangaPage: Chapters Count:', chaptersData ? chaptersData.length : 0);
 
@@ -40,7 +40,7 @@ const MangaPage = () => {
         setLoading(false);
       }
     };
-    
+
     if (mangaId) {
       fetchDetails();
     }

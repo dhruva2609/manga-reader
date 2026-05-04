@@ -80,7 +80,7 @@ const Navbar = ({ onSearch, mangas, loading, onSelect }) => {
         {/* --- 2. Brand Section (Mobile: Center/Left) --- */}
         <NavLink to="/" className="navbar-brand-wrapper">
           <span className="navbar-brand">
-            <span className="brand-accent">Manga</span>Reader
+            <span className="brand-accent">Manga Reader </span>
           </span>
         </NavLink>
 

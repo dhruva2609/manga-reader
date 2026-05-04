@@ -7,7 +7,7 @@ import { getMangaTitle } from "../utils";
 
 const ReaderPage = () => {
   const { chapterId } = useParams();
-  const { updateProgress, getMangaProgress } = useReadingProgress(); 
+  const { updateProgress, getMangaProgress } = useReadingProgress();
 
   const [pages, setPages] = useState([]);
   const [manga, setManga] = useState(null);
@@ -98,7 +98,7 @@ const ReaderPage = () => {
     <div className="reader">
       {/* Page Progress Bar */}
       <div
-        className="reader-progress-bar-wrapper" 
+        className="reader-progress-bar-wrapper"
         aria-label={`Reading progress: Page ${pageIdx + 1} of ${pages.length}`}
         role="progressbar"
         aria-valuenow={pageIdx + 1}
@@ -120,7 +120,7 @@ const ReaderPage = () => {
 
       {/* Toolbar with title and download button */}
       <div
-        className="reader-toolbar" 
+        className="reader-toolbar"
       >
         <span>
           {mangaTitle} {chapterTitle ? `- ${chapterTitle}` : ""}
@@ -148,7 +148,7 @@ const ReaderPage = () => {
 
       {/* Navigation Controls */}
       <div
-        className="page-controls" 
+        className="page-controls"
       >
         <button
           onClick={() => setPageIdx((i) => Math.max(i - 1, 0))}

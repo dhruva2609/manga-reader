@@ -47,7 +47,7 @@ function App() {
         <FavoritesProvider>
             <ReadingProgressProvider>
                 <div>
-                    <Navbar 
+                    <Navbar
                         mangas={mangas}
                         loading={loading}
                         onSearch={handleSearch}
