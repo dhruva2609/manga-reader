@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/mangadex/:path*",
+      "destination": "/api/mangadex-proxy?path=:path*"
+    },
+    {
       "source": "/manga-image/(.*)",
       "destination": "/api/mangadex-img?url=$1"
     },

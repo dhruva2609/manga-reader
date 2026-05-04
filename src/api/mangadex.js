@@ -12,18 +12,15 @@ console.log('-------------------------------------------');
 
 export const searchManga = async (query, includedTags = []) => {
     const url = `${BASE_URL}/manga`;
-    console.log(`DEBUG: Calling searchManga URL: ${url}`); // <-- DEBUG
     try {
-        const res = await axios.get(url, {
-            params: {
-                title: query,
-                limit: 10,
-                includes: ['cover_art'],
-                includedTags: includedTags,
-                contentRating: ['safe', 'suggestive', 'erotica'],
-            }
-        });
-        console.log('DEBUG: searchManga successful, returned:', res.data.data.length, 'manga'); // <-- DEBUG
+        const res = await axios.get(url, { params: { title: query, limit: 10 } });
+
+        // Check if res.data.data exists before accessing .length
+        if (!res?.data?.data) {
+            console.error("No data received from API");
+            return [];
+        }
+
         return res.data.data;
     } catch (error) {
         console.error('searchManga error:', error);
