@@ -7,7 +7,7 @@ import ChapterList from '../components/reader/ChapterList';
 
 const MangaPage = () => {
   const { mangaId } = useParams();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
   const [manga, setManga] = useState(null);

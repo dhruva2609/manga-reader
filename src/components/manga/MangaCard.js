@@ -1,6 +1,6 @@
 import React from "react";
-import { useFavorites } from "../../context/FavoritesContext";
-import { useReadingProgress } from "../../context/ReadingProgressContext";
+// import { useFavorites } from "../../context/FavoritesContext";
+// import { useReadingProgress } from "../../context/ReadingProgressContext";
 import { getCoverUrl, getMangaTitle } from '../../utils';
 import './MangaCard.css';
 
