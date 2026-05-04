@@ -4,16 +4,15 @@ const axios = require('axios');
 module.exports = async (req, res) => {
     // FIX: The slug parameter from the rewrite rule (vercel.json) is a single path string
     // (e.g., 'manga' or 'at-home/server/chapterId') and should be used directly.
-    const { slug } = req.query;
-    let url = `https://api.mangadex.org/${slug}`;
-
+    const { path } = req.query;
+    let url = `https://api.mangadex.org/${path}`;
     // Reconstruct query parameters manually to handle array-style params (e.g., includes[])
     // which are crucial for MangaDex endpoints.
     const queryParams = new URLSearchParams();
 
     for (const key in req.query) {
         // Skip the rewrite's own slug parameter
-        if (key !== 'slug') { 
+        if (key !== 'path') {
             const value = req.query[key];
             if (Array.isArray(value)) {
                 // Append multiple values for keys like includes[]
@@ -23,7 +22,7 @@ module.exports = async (req, res) => {
             }
         }
     }
-    
+
     if (queryParams.toString()) {
         url += `?${queryParams.toString()}`;
     }
