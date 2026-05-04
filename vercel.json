@@ -6,7 +6,7 @@
     },
     {
       "source": "/manga-image/:url*",
-      "destination": "/api/mangadex-img?url=:url"
+      "destination": "/api/mangadex-img?url=:url*"
     },
     {
       "source": "/(.*)",
