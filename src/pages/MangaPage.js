@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getMangaDetails, getChapters } from '../api/mangadex';
 import { useFavorites } from '../context/FavoritesContext';
-import { getMangaTitle } from '../utils';
+import { getMangaTitle, getCoverUrl } from '../utils';
 import ChapterList from '../components/reader/ChapterList';
 
 const MangaPage = () => {
@@ -44,28 +44,45 @@ const MangaPage = () => {
 
   const isFav = isFavorite(manga.id);
   const desc = manga.attributes.description?.en?.slice(0, 500) || 'No description available.';
+  const coverUrl = getCoverUrl(manga);
 
   return (
-    <div className="manga-details">
-      <h2>{manga.title}</h2>
-
-      <div className="hero-buttons" style={{marginBottom: '1.5rem'}}>
-        <button
-          className="hero-btn-primary"
-          onClick={() => setShowChapters(!showChapters)}
-        >
-          {showChapters ? 'Hide Chapters' : 'Show Chapters'}
-        </button>
-        <button
-          className={`hero-btn-secondary ${isFav ? 'active' : ''}`}
-          onClick={handleToggleFavorite}
-        >
-          {isFav ? '✓ Added to Favorites' : '+ Add to Favorites'}
-        </button>
+    <div className="manga-details animate-fade-in">
+      <div className="manga-header">
+        {coverUrl && (
+          <img
+            src={coverUrl}
+            alt={manga.title}
+            className="manga-cover animate-scale-in"
+          />
+        )}
+        <div className="manga-info animate-slide-up delay-100">
+          <h2>{manga.title}</h2>
+          {manga.attributes.author && manga.attributes.author.length > 0 && (
+            <p className="manga-author">By {manga.attributes.author.map(a => a.name).join(', ')}</p>
+          )}
+          <div className="hero-buttons">
+            <button
+              className="hero-btn-primary"
+              onClick={() => setShowChapters(!showChapters)}
+            >
+              {showChapters ? 'Hide Chapters' : 'Show Chapters'}
+            </button>
+            <button
+              className={`hero-btn-secondary ${isFav ? 'active' : ''}`}
+              onClick={handleToggleFavorite}
+            >
+              {isFav ? '✓ Added' : '+ Add to Favorites'}
+            </button>
+          </div>
+        </div>
       </div>
 
-      <p>{desc}</p>
-      {desc.length === 500 && <p>... read more</p>}
+      <div className="manga-description">
+        <h3>Synopsys</h3>
+        <p>{desc}</p>
+        {desc.length === 500 && <p>... read more</p>}
+      </div>
 
       {showChapters && <ChapterList chapters={chapters} />}
     </div>

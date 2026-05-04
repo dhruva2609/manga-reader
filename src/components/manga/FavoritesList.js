@@ -22,13 +22,13 @@ const FavoritesList = ({ favorites }) => {
     return (
         <div className="favorites-grid-container">
             {favorites.map((manga) => (
-                <MangaCard
-                    key={manga.id}
-                    manga={manga}
-                    onSelect={handleSelectManga}
-                    coverUrl={manga.coverUrl}
-                    displayVariant="grid"
-                />
+                <div key={manga.id} className="favorite-grid-item">
+                    <MangaCard
+                        manga={manga}
+                        onSelect={handleSelectManga}
+                        displayVariant="grid"
+                    />
+                </div>
             ))}
         </div>
     );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFavorites } from '../../context/FavoritesContext'; 
+import { useFavorites } from '../../context/FavoritesContext';
 import './HeroSection.css';
 import { getMangaTitle, getCoverUrl } from '../../utils';
 
@@ -11,8 +11,8 @@ const HeroSection = ({ manga, onRead }) => {
   const coverUrl = getCoverUrl(manga);
 
   const title = getMangaTitle(manga);
-  const desc = manga.attributes.description?.en 
-    ? manga.attributes.description.en 
+  const desc = manga.attributes.description?.en
+    ? manga.attributes.description.en
     : "No description available.";
 
   const isFav = isFavorite(manga.id);
@@ -23,23 +23,24 @@ const HeroSection = ({ manga, onRead }) => {
   };
 
   return (
-    <div className="hero-section" style={{ backgroundImage: `url(${coverUrl})` }}>
+    <div className="hero-section">
+      <div className="hero-bg" style={{ backgroundImage: `url(${coverUrl})` }} />
       <div className="hero-overlay">
         <div className="hero-content">
           <span className="hero-badge">🔥 Trending #1</span>
-          
+
           <h1 className="fab-title">{title}</h1>
-          
+
           <p className="hero-desc">{desc.slice(0, 200)}...</p>
           <div className="hero-buttons">
-            <button 
-              className="hero-btn-primary" 
+            <button
+              className="hero-btn-primary"
               onClick={() => onRead(manga)}
             >
               Read Now
             </button>
-            
-            <button 
+
+            <button
               className={`hero-btn-secondary ${isFav ? 'active' : ''}`}
               onClick={handleToggleFavorite}
             >

@@ -11,16 +11,14 @@ const MangaList = ({ mangas, onSelect }) => {
   return (
     <div className="manga-list">
       {mangas.map((manga) => (
-        <Link 
-          to={`/manga/${manga.id}`} 
-          key={manga.id} 
+        <div
+          key={manga.id}
           className="manga-card-link"
-          // FIX: Ensure onSelect is called here (clears search), and pass a no-op to MangaCard
-          onClick={() => onSelect(manga)} 
+          onMouseDown={(e) => e.preventDefault()} // Prevent blur so click registers in search dropdown
+          onClick={() => onSelect(manga)}
         >
-          {/* FIX: Pass null/undefined as onSelect to MangaCard to prevent double-nav/double-state-clear */}
-          <MangaCard manga={manga} onSelect={undefined} /> 
-        </Link>
+          <MangaCard manga={manga} onSelect={undefined} displayVariant="compact" />
+        </div>
       ))}
     </div>
   );

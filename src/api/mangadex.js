@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-const BASE_URL = 
-    process.env.NODE_ENV === 'development' 
-        ? '' 
+const BASE_URL =
+    process.env.NODE_ENV === 'development'
+        ? ''
         : '/api/mangadex';
 
 console.log('--- API DEBUG: Environment and BASE_URL ---');
@@ -19,7 +19,7 @@ export const searchManga = async (query, includedTags = []) => {
                 title: query,
                 limit: 10,
                 includes: ['cover_art'],
-                includedTags: includedTags, 
+                includedTags: includedTags,
                 contentRating: ['safe', 'suggestive', 'erotica'],
             }
         });
@@ -33,7 +33,9 @@ export const searchManga = async (query, includedTags = []) => {
 
 export const getMangaDetails = async (mangaId) => {
     try {
-        const res = await axios.get(`${BASE_URL}/manga/${mangaId}`);
+        const res = await axios.get(`${BASE_URL}/manga/${mangaId}`, {
+            params: { includes: ['cover_art', 'author'] }
+        });
         return res.data.data;
     } catch (error) {
         console.error('getMangaDetails error:', error);
@@ -69,19 +71,19 @@ export const getChapterPages = async (chapterId) => {
         // Step 1: Get the host server and image hash/files from the API
         const res = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
         const { baseUrl, chapter } = res.data;;
-        
-        console.log('DEBUG: Chapter Server Response Data (partial):', { 
+
+        console.log('DEBUG: Chapter Server Response Data (partial):', {
             baseUrl: res.data.baseUrl,
             hash: res.data.chapter.hash,
             dataLength: res.data.chapter.data.length
         }); // <-- DEBUG
-        
+
         // Ensure data is valid
         if (!chapter || !chapter.data || !chapter.hash) {
             console.error('getChapterPages error: Invalid chapter data', res.data);
             return [];
         }
-        
+
         // CRITICAL FIX: Map page URLs to use the internal image proxy in production for the Referer header fix.
         // Locally uses the direct baseUrl for speed.
         const imageHost = process.env.NODE_ENV === 'development' ? baseUrl : '/api/mangadex-img';
@@ -106,7 +108,7 @@ export const getReaderData = async (chapterId) => {
         // Step 1: Get pages list via proxy
         const serverRes = await axios.get(serverUrl);
         const { baseUrl, chapter: chapterData } = serverRes.data;
-        
+
         // CRITICAL FIX: Route page URLs through the internal image proxy in production.
         const imageHost = process.env.NODE_ENV === 'development' ? baseUrl : '/api/mangadex-img';
         const pageUrls = chapterData.data.map(file => `${imageHost}/data/${chapterData.hash}/${file}`);
@@ -115,7 +117,7 @@ export const getReaderData = async (chapterId) => {
         const chapterUrl = `${BASE_URL}/chapter/${chapterId}`;
         const mangaUrl = `${BASE_URL}/manga/${chapterId}`;
         console.log(`DEBUG: Calling Chapter URL: ${chapterUrl}`); // <-- DEBUG
-        
+
         const chapterRes = await axios.get(chapterUrl);
         const mangaId = chapterRes.data.data.relationships.find(r => r.type === 'manga').id;
 
@@ -123,7 +125,7 @@ export const getReaderData = async (chapterId) => {
         const mangaRes = await axios.get(`${BASE_URL}/manga/${mangaId}`, {
             params: { includes: ['cover_art'] }
         });
-        
+
         console.log('DEBUG: getReaderData completed successfully.'); // <-- DEBUG
         return {
             pages: pageUrls,
@@ -143,7 +145,7 @@ export const getPopularManga = async () => {
                 limit: 20,
                 includes: ['cover_art'],
                 order: { followedCount: 'desc' },
-                contentRating: ['safe', 'suggestive'], 
+                contentRating: ['safe', 'suggestive'],
                 hasAvailableChapters: 'true'
             }
         });

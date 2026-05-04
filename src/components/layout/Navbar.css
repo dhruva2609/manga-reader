@@ -1,32 +1,42 @@
 :root {
   --navbar-bg: #fff;
-  --navbar-text:#6C63FF; /* Brand color */
-  --navbar-link: #23263A; /* Inactive link text */
-  --navbar-link-hover:#6C63FF; /* Hover/Active color (Light Mode Primary Accent) */
+  --navbar-text: #6C63FF;
+  /* Brand color */
+  --navbar-link: #23263A;
+  /* Inactive link text */
+  --navbar-link-hover: #6C63FF;
+  /* Hover/Active color (Light Mode Primary Accent) */
   --navbar-border: #E3E7ED;
   --navbar-shadow: 0 2px 16px rgba(108, 99, 255, 0.08);
-  --bg-card: #fff; /* For dropdown */
-  --border: #e3e7ed; /* For dropdown */
-  --text-muted: #8A8FA6; /* For dropdown */
+  --bg-card: #fff;
+  /* For dropdown */
+  --border: #e3e7ed;
+  /* For dropdown */
+  --text-muted: #8A8FA6;
+  /* For dropdown */
 }
 
 [data-theme="dark"] {
-  --navbar-bg: rgba(19, 19, 43, 0.95); /* Semi-transparent Dark Navy */
+  --navbar-bg: rgba(19, 19, 43, 0.95);
+  /* Semi-transparent Dark Navy */
   --navbar-text: #FFFFFF;
   --navbar-link: #8A8FA6;
-  --navbar-link-hover: #FF56F6; /* Neon Pink for Active/Hover */
+  --navbar-link-hover: #FF56F6;
+  /* Neon Pink for Active/Hover */
   --navbar-border: #252543;
   --navbar-shadow: 0 4px 20px rgba(81, 66, 252, 0.15);
-  --bg-card: #16162D; 
+  --bg-card: #16162D;
   --border: #252543;
 }
 
 .navbar {
-  background: var(--navbar-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1.5px solid var(--navbar-border);
-  box-shadow: var(--navbar-shadow);
+  background: rgba(255, 255, 255, 0.85);
+  /* Slightly more transparent */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(227, 231, 237, 0.6);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+  /* Subtle shadow */
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -34,20 +44,26 @@
   transition: all 0.3s ease;
 }
 
+[data-theme="dark"] .navbar {
+  background: rgba(19, 19, 43, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
 .navbar-content-wrapper {
-  max-width: 1400px; 
+  max-width: 1400px;
   margin: 0 auto;
   /* FIX: Increased vertical padding from 0.5rem to 0.75rem to make the search bar sit lower */
-  padding: 0.75rem 2.5rem; 
+  padding: 0.75rem 2.5rem;
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Ensures vertical alignment */
+  align-items: center;
+  /* Ensures vertical alignment */
 }
 
 /* 1. Brand Wrapper */
 .navbar-brand-wrapper {
-    flex-shrink: 0; 
-    text-decoration: none;
+  flex-shrink: 0;
+  text-decoration: none;
 }
 
 .navbar-brand {
@@ -67,8 +83,8 @@
 .navbar-links {
   display: flex;
   align-items: center;
-  gap: 2rem; 
-  flex-grow: 0; 
+  gap: 2rem;
+  flex-grow: 0;
   flex-shrink: 0;
 }
 
@@ -76,7 +92,7 @@
   color: var(--navbar-link);
   text-decoration: none;
   font-weight: 500;
-  padding: 0.25rem 0; 
+  padding: 0.25rem 0;
   font-size: 1.05rem;
   transition: color 0.2s, opacity 0.2s;
   position: relative;
@@ -104,40 +120,41 @@
 
 /* 3. Actions Wrapper (Desktop) */
 .navbar-actions-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem; 
-    margin-left: auto; /* Pushes group to the far right */
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-left: auto;
+  /* Pushes group to the far right */
 }
 
 /* Central Search Bar (Desktop) */
 .navbar-search {
-  position: relative; 
+  position: relative;
   z-index: 10;
-  flex-shrink: 1; 
-  flex-grow: 1;  
-  max-width: 500px; 
-  margin: 0 4rem; 
+  flex-shrink: 1;
+  flex-grow: 1;
+  max-width: 500px;
+  margin: 0 4rem;
 }
 
 /* Ensure the search bar looks good within the Navbar */
 .navbar-search .search-bar-container {
-    margin-bottom: 0; 
-    width: 100%; 
+  margin-bottom: 0;
+  width: 100%;
 }
 
 .search-results-dropdown {
   position: absolute;
-  top: 100%; 
+  top: 100%;
   left: 0;
   right: 0;
   width: 100%;
-  
+
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-top: none;
   border-radius: 0 0 12px 12px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   z-index: 100;
   max-height: 400px;
   overflow-y: auto;
@@ -159,32 +176,34 @@
 
 /* Mobile Search Icon (Magnifying Glass) */
 .mobile-search-icon {
-    display: none; /* Hide by default */
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--navbar-link);
-    padding: 0;
-    transition: color 0.2s;
-    flex-shrink: 0; 
-    margin-left: 0.5rem; /* Add small space from brand */
+  display: none;
+  /* Hide by default */
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--navbar-link);
+  padding: 0;
+  transition: color 0.2s;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+  /* Add small space from brand */
 }
 
 .mobile-search-icon:hover {
-    color: var(--navbar-link-hover);
+  color: var(--navbar-link-hover);
 }
 
 .mobile-search-icon svg {
-    display: block;
-    width: 24px;
-    height: 24px;
+  display: block;
+  width: 24px;
+  height: 24px;
 }
 
 /* --- Hamburger Menu (Mobile) --- */
 .hamburger-menu {
-  display: none; 
+  display: none;
   cursor: pointer;
-  z-index: 1001; 
+  z-index: 1001;
   margin-right: 0.5rem;
 }
 
@@ -221,20 +240,20 @@
 .mobile-nav-menu {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; 
+  align-items: flex-start;
   gap: 1rem;
-  position: fixed; 
+  position: fixed;
   top: 0;
   left: 0;
-  width: 80vw; 
-  max-width: 320px; 
+  width: 80vw;
+  max-width: 320px;
   height: 100vh;
   background: var(--navbar-bg);
-  padding: 1.5rem 1.25rem; 
-  box-shadow: 4px 0 15px rgba(0,0,0,0.2); 
+  padding: 1.5rem 1.25rem;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
   transform: translateX(-100%);
   transition: transform 0.3s ease-in-out;
-  z-index: 1001; 
+  z-index: 1001;
 }
 
 .mobile-nav-menu.open {
@@ -282,7 +301,7 @@
   color: var(--navbar-link);
   text-decoration: none;
   font-weight: 500;
-  font-size: 1.1rem; 
+  font-size: 1.1rem;
   padding: 0.75rem 0.5rem;
   transition: color 0.2s, background 0.2s;
   width: 100%;
@@ -301,99 +320,102 @@
 }
 
 .mobile-nav-actions {
-  margin-top: auto; 
+  margin-top: auto;
 }
 
 
 /* --- Full-Screen Mobile Search Overlay (Activated by Search Icon) --- */
 .mobile-search-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    /* Fix S2: Change fixed height to 100vh for full-screen results view */
-    height: 100vh; 
-    background: var(--navbar-bg);
-    border-bottom: 1px solid var(--navbar-border);
-    box-shadow: var(--navbar-shadow);
-    z-index: 1002; 
-    display: flex;
-    /* Fix S2: Use column layout to stack search bar and results */
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 0.5rem 1rem;
-    transform: translateY(-100%);
-    transition: transform 0.3s ease-in-out;
-    overflow-y: auto; /* Allow scrolling for results */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  /* Fix S2: Change fixed height to 100vh for full-screen results view */
+  height: 100vh;
+  background: var(--navbar-bg);
+  border-bottom: 1px solid var(--navbar-border);
+  box-shadow: var(--navbar-shadow);
+  z-index: 1002;
+  display: flex;
+  /* Fix S2: Use column layout to stack search bar and results */
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.5rem 1rem;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
+  /* Allow scrolling for results */
 }
 
 .mobile-search-overlay.open {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 /* Close button (X) for the overlay */
 .mobile-search-close-btn {
-    background: none;
-    border: none;
-    color: var(--navbar-link);
-    cursor: pointer;
-    line-height: 1;
-    padding: 0.5rem;
-    margin-left: 0.5rem;
-    flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--navbar-link);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.5rem;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
 }
+
 .mobile-search-close-btn svg {
-    display: block;
-    width: 24px;
-    height: 24px;
+  display: block;
+  width: 24px;
+  height: 24px;
 }
 
 .mobile-search-bar-wrapper {
-    flex-grow: 1;
-    /* Add margin to push it away from the close button */
-    margin-right: 1rem;
-    /* Fix S2: Ensure wrapper takes full width inside the overlay */
-    width: 100%; 
+  flex-grow: 1;
+  /* Add margin to push it away from the close button */
+  margin-right: 1rem;
+  /* Fix S2: Ensure wrapper takes full width inside the overlay */
+  width: 100%;
 }
 
 .mobile-search-bar-wrapper .search-bar-container {
-    width: 100%;
-    padding: 0.4rem 0.6rem 0.4rem 1rem; 
+  width: 100%;
+  padding: 0.4rem 0.6rem 0.4rem 1rem;
 }
 
 /* New element to contain the search results in the overlay */
 .mobile-search-results {
-    width: 100%;
-    /* Add top margin to separate from the search bar */
-    padding: 0 0.5rem 2rem 0.5rem; 
-    flex-grow: 1;
+  width: 100%;
+  /* Add top margin to separate from the search bar */
+  padding: 0 0.5rem 2rem 0.5rem;
+  flex-grow: 1;
 }
 
 
 /* Mobile Responsiveness */
 @media (max-width: 900px) {
-  
+
   .navbar-content-wrapper {
-    padding: 0.75rem 1rem; /* Matched to desktop to lower the search bar slightly */
-    gap: 0.5rem; 
+    padding: 0.75rem 1rem;
+    /* Matched to desktop to lower the search bar slightly */
+    gap: 0.5rem;
   }
-  
+
   /* Hides desktop navigation and search elements */
   .navbar-actions-wrapper {
-    display: none; 
+    display: none;
   }
-  
+
   .navbar-search {
-    display: none; 
+    display: none;
   }
 
   /* Shows hamburger menu */
   .hamburger-menu {
-    display: flex; 
+    display: flex;
     flex-shrink: 0;
     order: 1;
   }
-  
+
   /* Brand is next */
   .navbar-brand-wrapper {
     flex-shrink: 0;
@@ -401,34 +423,35 @@
     /* Pushes remaining elements (icons) to the right */
     margin-right: auto;
   }
-  
+
   /* Shows the search icon next to the brand */
   .mobile-search-icon {
-      display: block;
-      flex-shrink: 0;
-      order: 3;
-      margin-left: 0.5rem;
+    display: block;
+    flex-shrink: 0;
+    order: 3;
+    margin-left: 0.5rem;
   }
-  
+
   /* Dark Mode Toggle is the last element on the far right */
   .navbar-actions-wrapper {
+    display: flex;
+    margin-left: 0;
+    /* Margin is handled by brand's margin-right: auto */
+    flex-shrink: 0;
+    order: 4;
+
+    .navbar-links {
+      display: none;
+    }
+
+    .navbar-actions {
+      /* Contains DarkModeToggle, which is what we want visible on the far right */
       display: flex;
-      margin-left: 0; /* Margin is handled by brand's margin-right: auto */
-      flex-shrink: 0;
-      order: 4;
-      
-      .navbar-links {
-          display: none;
-      }
-      
-      .navbar-actions {
-          /* Contains DarkModeToggle, which is what we want visible on the far right */
-          display: flex;
-      }
+    }
   }
 }
 
 /* Delete the unused .navbar-search-actions styles */
 .navbar-search-actions {
-    display: none; 
+  display: none;
 }

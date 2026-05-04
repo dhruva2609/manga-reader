@@ -8,32 +8,41 @@
   --accent2: #5EDFFF;
   --border: #e3e7ed;
   /* Fix S1: Define missing text-primary variable */
-  --text-primary: var(--text-main); 
+  --text-primary: var(--text-main);
 }
 
 /* Updated Dark Mode to match the Crypto/NFT Image */
 [data-theme="dark"] {
-  --bg-main: #0D0D21;      /* Deepest Navy (Main Background) */
-  --bg-card: #16162D;      /* Slightly Lighter Navy (Card Background) */
-  --bg-sidebar: #13132B;   /* Dark Navy (Sidebar) */
-  --text-main: #FFFFFF;    /* Pure White Text */
-  --text-muted: #8A8FA6;   /* Cool Grey Text */
-  --accent: #5142FC;       /* Vibrant Purple (Primary Buttons) */
-  --accent2: #FF56F6;      /* Neon Pink (Secondary/Gradients) */
-  --border: #252543;       /* Low contrast border */
+  --bg-main: #0D0D21;
+  /* Deepest Navy (Main Background) */
+  --bg-card: #16162D;
+  /* Slightly Lighter Navy (Card Background) */
+  --bg-sidebar: #13132B;
+  /* Dark Navy (Sidebar) */
+  --text-main: #FFFFFF;
+  /* Pure White Text */
+  --text-muted: #8A8FA6;
+  /* Cool Grey Text */
+  --accent: #5142FC;
+  /* Vibrant Purple (Primary Buttons) */
+  --accent2: #FF56F6;
+  /* Neon Pink (Secondary/Gradients) */
+  --border: #252543;
+  /* Low contrast border */
   /* Fix S1: Define missing text-primary variable in dark mode */
-  --text-primary: var(--text-main); 
+  --text-primary: var(--text-main);
 }
 
 /* === Base Styles === */
 body {
-  font-family: 'Outfit', sans-serif; /* Changed from Inter */
+  font-family: 'Outfit', sans-serif;
+  /* Changed from Inter */
   color: var(--text-main);
   margin: 0;
   padding: 0;
   background: var(--bg-main);
   /* Add smooth scrolling for the whole page */
-  scroll-behavior: smooth; 
+  scroll-behavior: smooth;
 }
 
 /* === Layout === */
@@ -49,7 +58,8 @@ body {
   align-items: center;
   background: var(--bg-main);
   min-height: 100vh;
-  box-shadow: 0 6px 32px rgba(81, 66, 252, 0.07); /* Updated shadow to purple hint */
+  box-shadow: 0 6px 32px rgba(81, 66, 252, 0.07);
+  /* Updated shadow to purple hint */
   position: relative;
   overflow-x: hidden;
 }
@@ -74,8 +84,15 @@ body {
 }
 
 @keyframes fadeInDown {
-  0% { opacity: 0; transform: translateY(-30px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* === Card Sections === */
@@ -86,7 +103,8 @@ body {
   background: var(--bg-card);
   color: var(--text-main);
   border-radius: 18px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2); /* Darker shadow for dark mode depth */
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+  /* Darker shadow for dark mode depth */
   margin-bottom: 2rem;
   padding: 2rem 2.5rem;
   width: 100%;
@@ -95,8 +113,15 @@ body {
 }
 
 @keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(30px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* === Manga List === */
@@ -108,44 +133,80 @@ body {
 }
 
 .manga-card {
+  position: relative;
+  overflow: hidden;
+  /* Needed for the shine effect */
   background: var(--bg-card);
-  border-radius: 14px;
-  padding: 0.9rem 1.1rem;
+  border-radius: 16px;
+  /* Matched radius */
+  padding: 0;
   display: flex;
-  align-items: center;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-  transition: box-shadow 0.2s, border 0.2s;
-  border: 1.5px solid transparent;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  will-change: transform, box-shadow;
 }
 
-.manga-card:hover,
-.manga-card.active {
-  border: 1.5px solid var(--accent);
-  box-shadow: 0 4px 24px rgba(81, 66, 252, 0.2); /* Purple glow on hover */
+/* Shine Effect */
+.manga-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  z-index: 2;
+  display: block;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 100%);
+  transform: skewX(-25deg);
+  opacity: 0;
+  transition: none;
 }
 
-.manga-card img {
-  width: 54px;
-  height: 80px;
+.manga-card:hover::before {
+  animation: shine 0.75s;
+}
+
+@keyframes shine {
+  100% {
+    left: 125%;
+    opacity: 1;
+  }
+}
+
+.manga-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  /* Softer, deeper shadow */
+}
+
+/* Specific card elements */
+.card-image-container {
+  overflow: hidden;
+  border-radius: 16px;
+  position: relative;
+}
+
+.card-image {
+  width: 100%;
+  aspect-ratio: 2/3;
   object-fit: cover;
-  border-radius: 8px;
-  margin-right: 1.2rem;
-  border: 2px solid var(--border);
-  background: var(--bg-main);
+  transition: transform 0.5s ease;
+}
+
+.manga-card:hover .card-image {
+  transform: scale(1.05);
 }
 
 .manga-card-title {
-  font-size: 1.1rem;
+  padding: 0.8rem 0.5rem;
   font-weight: 600;
   color: var(--text-main);
-  margin-bottom: 0.2rem;
+  text-align: center;
+  transition: color 0.3s;
 }
 
-.manga-card-desc {
-  font-size: 0.96rem;
-  color: var(--text-muted);
-  margin-top: 0.1rem;
+.manga-card:hover .manga-card-title {
+  color: var(--accent);
 }
 
 /* === Manga Details === */
@@ -157,7 +218,8 @@ body {
 }
 
 .manga-details p {
-  color: var(--text-muted); /* Changed to variable for better dark mode visibility */
+  color: var(--text-muted);
+  /* Changed to variable for better dark mode visibility */
   font-size: 1.05rem;
   line-height: 1.6;
   margin-bottom: 1.2rem;
@@ -172,7 +234,7 @@ body {
   font-weight: 500;
   font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(108,99,255,0.07);
+  box-shadow: 0 2px 8px rgba(108, 99, 255, 0.07);
   transition: background 0.2s;
 }
 
@@ -208,23 +270,68 @@ body {
 
 .chapter-list li {
   margin-bottom: 0.7rem;
+  opacity: 0;
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+/* Stagger up to 20 items */
+.chapter-list li:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.chapter-list li:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.chapter-list li:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.chapter-list li:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.chapter-list li:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.chapter-list li:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+.chapter-list li:nth-child(n+7) {
+  animation-delay: 0.35s;
 }
 
 .chapter-list button {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  padding: 0.48rem 1.2rem;
-  border-radius: 6px;
+  background: var(--bg-card);
+  /* Changed to card background for a list style */
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
   font-weight: 500;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s;
-  box-shadow: 0 2px 6px rgba(108,99,255,0.07);
+  width: 100%;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .chapter-list button:hover {
-  background: var(--accent2);
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.2);
+}
+
+.chapter-list button:active {
+  transform: translateX(2px) scale(0.99);
 }
 
 .chapter-dropdown {
@@ -260,7 +367,8 @@ body {
   transition: width 0.2s;
 }
 
-.reader-progress-bar-wrapper { /* New wrapper for the bar, replacing inline styles */
+.reader-progress-bar-wrapper {
+  /* New wrapper for the bar, replacing inline styles */
   width: 100%;
   height: 8px;
   background: var(--border);
@@ -299,7 +407,7 @@ body {
   width: 100%;
 }
 
-.reader-toolbar > span {
+.reader-toolbar>span {
   font-weight: 600;
 }
 
@@ -343,7 +451,7 @@ body {
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s;
-  box-shadow: 0 1px 3px rgba(108,99,255,0.08);
+  box-shadow: 0 1px 3px rgba(108, 99, 255, 0.08);
   font-family: inherit;
 }
 
@@ -382,12 +490,18 @@ button:active {
 }
 
 [data-theme="dark"] .skeleton {
-  background: linear-gradient(90deg, #232342 25%, #2a2a4f 50%, #232342 75%); /* Darker skeleton for dark mode */
+  background: linear-gradient(90deg, #232342 25%, #2a2a4f 50%, #232342 75%);
+  /* Darker skeleton for dark mode */
 }
 
 @keyframes skeleton-loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* === Welcome Placeholder === */
@@ -422,10 +536,12 @@ button:active {
   .main-layout {
     flex-direction: column;
   }
+
   .content {
     border-radius: 0;
     padding: 1.5rem 0.5rem;
   }
+
   .manga-details,
   .chapter-list,
   .reader,
@@ -433,16 +549,19 @@ button:active {
     padding: 1.2rem 0.5rem;
     max-width: 98vw;
   }
+
   .content-banner {
     padding: 1rem 1rem;
     font-size: 1rem;
   }
+
   .reader {
     padding: 1.2rem 0.2rem;
     max-width: 100vw;
     width: 100vw;
   }
 }
+
 .continue-reading {
   display: flex;
   justify-content: center;
@@ -482,7 +601,8 @@ button:active {
 /* Dark mode support */
 [data-theme="dark"] .continue-reading-btn {
   background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%);
-  color: #fff; /* Keep text white on purple button */
+  color: #fff;
+  /* Keep text white on purple button */
   box-shadow: 0 2px 12px rgba(81, 66, 252, 0.3);
 }
 
@@ -530,4 +650,209 @@ button:active {
 /* Optional: Extra style for dark mode if you want more contrast */
 [data-theme="dark"] .download-pdf-btn {
   box-shadow: 0 2px 8px rgba(255, 107, 129, 0.08);
+}
+
+/* === Manga Page Header === */
+.manga-header {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  align-items: flex-start;
+}
+
+.manga-cover {
+  width: 200px;
+  /* Fixed width for consistency */
+  height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.manga-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Center content vertically relative to cover */
+  min-height: 300px;
+}
+
+.manga-info h2 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+  color: var(--text-main);
+  font-weight: 800;
+}
+
+.manga-author {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.manga-description {
+  margin-bottom: 2rem;
+}
+
+.manga-description h3 {
+  margin-bottom: 0.8rem;
+  color: var(--accent);
+  font-size: 1.4rem;
+}
+
+@media (max-width: 768px) {
+  .manga-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .manga-cover {
+    width: 180px;
+    height: 270px;
+  }
+
+  .manga-info {
+    align-items: center;
+    min-height: auto;
+  }
+
+  .manga-info h2 {
+    font-size: 2rem;
+  }
+}
+
+/* === Animations === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(108, 99, 255, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(108, 99, 255, 0);
+  }
+}
+
+/* Base Animation Utilities */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s ease-out forwards;
+}
+
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+/* === Refined Glassmorphism === */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .glass-panel {
+  background: rgba(22, 22, 45, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* === Global UI Polish === */
+button {
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+/* Scrollbar Enhancement */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }

@@ -15,7 +15,7 @@
   align-items: center;
   min-height: 60vh;
   text-align: center;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 .history-empty-placeholder p {
@@ -38,19 +38,20 @@
 
 .history-list-item {
   /* FIX: Use flex layout with padding right for timestamp */
-  position: relative; 
+  position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 12px;
   /* FIX: Increased vertical padding and added space for timestamp/details in right bottom corner */
-  padding: 1rem 1rem 2.5rem 1rem; 
-  
+  padding: 1rem 1rem 2.5rem 1rem;
+
   display: flex;
-  align-items: flex-start; /* Align image and text top */
+  align-items: flex-start;
+  /* Align image and text top */
   gap: 1.5rem;
   cursor: pointer;
-  min-height: 105px; 
-  
+  min-height: 105px;
+
   transition: all 0.2s ease-in-out;
 }
 
@@ -62,7 +63,7 @@
 
 /* FIX: Ensure the MangaCard image remains correct size */
 .history-list-item .manga-card {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .history-list-item .manga-card img {
@@ -82,10 +83,10 @@
 
 .history-item-details {
   flex-grow: 1;
-  color: var(--text-main); 
+  color: var(--text-main);
   overflow: hidden;
   /* FIX: Ensure details container respects the new padding */
-  padding-right: 180px; 
+  padding-right: 180px;
 }
 
 .history-item-title {
@@ -104,13 +105,13 @@
   color: var(--text-muted);
   margin: 0;
   /* FIX: Added space below the chapter title */
-  margin-bottom: 0.5rem; 
+  margin-bottom: 0.5rem;
 }
 
 .history-item-last-read {
   /* FIX: Absolute positioning to bottom right corner */
   position: absolute;
-  bottom: 0.75rem; 
+  bottom: 0.75rem;
   right: 1rem;
   font-size: 0.9rem;
   color: var(--text-muted);
@@ -126,25 +127,27 @@
     /* Stack layout on small screens */
     flex-wrap: wrap;
     gap: 0.5rem 1rem;
-    padding: 1rem; /* Reset padding for stacking */
+    padding: 1rem;
+    /* Reset padding for stacking */
   }
 
   .history-item-details {
     flex-grow: 1;
-    min-width: 150px; 
-    padding-right: 0; /* Remove restriction */
+    min-width: 150px;
+    padding-right: 0;
+    /* Remove restriction */
   }
-  
+
   .history-item-last-read {
     /* Reset absolute positioning for stacking */
-    position: static; 
+    position: static;
     margin-left: 0;
     text-align: left;
     width: 100%;
     padding-left: 0;
     font-size: 0.8rem;
     margin-top: 0.25rem;
-    order: 3; 
+    order: 3;
   }
 
   .history-list-item .manga-card {

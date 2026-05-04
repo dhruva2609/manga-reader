@@ -9,6 +9,7 @@
   outline: none;
   padding: 0 0.5rem;
 }
+
 .favorite-btn.active {
   color: gold;
 }
@@ -44,4 +45,64 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Compact variant for Search Results */
+.manga-card.compact-variant {
+  flex-direction: row;
+  align-items: center;
+  padding: 0.5rem;
+  gap: 1rem;
+  border-radius: 8px;
+  min-height: auto;
+  background: var(--bg-card);
+  /* Ensure bg is set */
+}
+
+.manga-card.compact-variant .card-image-container {
+  width: 48px;
+  height: 68px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin: 0 !important;
+  /* Force override any defaults */
+  overflow: hidden;
+}
+
+.manga-card.compact-variant .card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  aspect-ratio: auto;
+  /* Reset aspect ratio for compact images */
+  margin: 0;
+}
+
+.manga-card.compact-variant .manga-card-title {
+  text-align: left;
+  padding: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0;
+  /* Truncate text */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--text-main);
+}
+
+.manga-card.compact-variant:hover {
+  transform: translateX(4px);
+  /* Slide right slightly instead of up */
+  box-shadow: none;
+  /* Handle highlight via background */
+  background: var(--bg-sidebar, #f4f4f9);
+  /* Subtle highlight fallback */
+}
+
+[data-theme="dark"] .manga-card.compact-variant:hover {
+  background: rgba(255, 255, 255, 0.05);
 }

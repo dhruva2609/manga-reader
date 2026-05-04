@@ -4,7 +4,7 @@ import { useReadingProgress } from "../../context/ReadingProgressContext";
 import { getCoverUrl, getMangaTitle } from '../../utils';
 import './MangaCard.css';
 
-const MangaCard = ({ manga, onSelect }) => {
+const MangaCard = ({ manga, onSelect, displayVariant }) => {
   const coverUrl = getCoverUrl(manga);
   const title = getMangaTitle(manga);
 
@@ -15,7 +15,7 @@ const MangaCard = ({ manga, onSelect }) => {
   };
 
   return (
-    <div className="manga-card" onClick={handleSelect}>
+    <div className={`manga-card ${displayVariant === 'grid' ? 'grid-variant' : ''} ${displayVariant === 'compact' ? 'compact-variant' : ''}`} onClick={handleSelect}>
       <div className="card-image-container">
         {coverUrl ? (
           <img src={coverUrl} alt={title} className="card-image" />
@@ -23,7 +23,7 @@ const MangaCard = ({ manga, onSelect }) => {
           <img src="https://via.placeholder.com/150" alt={title} className="card-image" />
         )}
       </div>
-      <div className="card-title">
+      <div className="manga-card-title">
         {title}
       </div>
     </div>

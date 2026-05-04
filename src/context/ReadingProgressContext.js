@@ -25,7 +25,7 @@ export const ReadingProgressProvider = ({ children }) => {
             const currentProgress = prevHistory[mangaId];
             if (currentProgress &&
                 currentProgress.lastReadChapterId === chapterId &&
-                currentProgress.lastReadPage === pageIdx) {
+                currentProgress.lastReadPage === (pageIdx || 0)) {
                 return prevHistory;
             }
 
@@ -52,12 +52,12 @@ export const ReadingProgressProvider = ({ children }) => {
         // Returns sorted history, used by HistoryView.js
         return Object.values(history).sort((a, b) => b.timestamp - a.timestamp);
     }, [history]);
-    
+
     // FIX: Add getLastRead for ContinueReading.js
     const getLastRead = useCallback(() => {
         const historyList = Object.values(history);
         if (historyList.length === 0) return null;
-        
+
         // Return the item with the highest (latest) timestamp
         return historyList.reduce((latest, current) => {
             return current.timestamp > latest.timestamp ? current : latest;
