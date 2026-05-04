@@ -14,31 +14,48 @@ export const getMangaTitle = (manga) => {
   return firstKey ? titles[firstKey] : "Untitled Manga";
 };
 
-// --- CORRECTED IMAGE HOST UTILITIES ---
-
 /**
- * Returns the correct image host based on the environment.
+ * Returns a proxied image URL that works both in development (via CRA setupProxy)
+ * and in production (via Vercel serverless function).
+ *
+ * Both environments use /manga-image?url=<encodedUrl> so the same code path works
+ * everywhere — no NODE_ENV branching needed in the URL builder.
  */
-export const getMangaImageHost = () => {
-    // FIX 1: In production (Vercel), return the local proxy path
-    // The vercel.json rewrite will map this to uploads.mangadex.org
-    return process.env.NODE_ENV === 'development'
-        ? 'https://uploads.mangadex.org' 
-        : '/api/mangadex-img'; // <--- CRITICAL FIX
+export const proxyImageUrl = (directUrl) => {
+  if (!directUrl) return null;
+  return `/manga-image?url=${encodeURIComponent(directUrl)}`;
 };
 
 /**
- * Constructs the full URL for a manga cover image.
+ * Constructs the full proxied URL for a manga cover image.
+ *
+ * Accepts either:
+ *   getCoverUrl(mangaObject)           — used by MangaPage.js
+ *   getCoverUrl(mangaId, fileName)     — used by MangaCard.js
  */
-export const getCoverUrl = (manga, size = '.256.jpg') => {
+export const getCoverUrl = (mangaOrId, fileNameOrSize, size = '.256.jpg') => {
+  let mangaId, fileName;
+
+  if (typeof mangaOrId === 'string') {
+    // Called as getCoverUrl(mangaId, fileName)
+    mangaId = mangaOrId;
+    fileName = fileNameOrSize;
+  } else {
+    // Called as getCoverUrl(mangaObject) or getCoverUrl(mangaObject, size)
+    const manga = mangaOrId;
     if (!manga) return null;
-    const host = getMangaImageHost();
-    const coverRel = manga.relationships?.find((r) => r.type === "cover_art");
-    // FIX 2: Correctly get the cover's file name from the relationship's attributes
-    const fileName = coverRel?.attributes?.fileName;
-    if (!fileName) return null;
-    
-    // The format is: HOST/covers/MANGA_ID/FILENAME.SIZE.jpg
-    // In production, this becomes: /api/mangadex-img/covers/MANGA_ID/FILENAME.SIZE.jpg
-    return `${host}/covers/${manga.id}/${fileName}${size}`;
+    mangaId = manga.id;
+    const coverRel = manga.relationships?.find((r) => r.type === 'cover_art');
+    fileName = coverRel?.attributes?.fileName;
+    // If second arg is a size string (e.g. '.512.jpg'), use it
+    if (typeof fileNameOrSize === 'string' && fileNameOrSize.startsWith('.')) {
+      size = fileNameOrSize;
+    }
+  }
+
+  if (!mangaId || !fileName) return null;
+
+  // Direct MangaDex CDN URL
+  const directUrl = `https://uploads.mangadex.org/covers/${mangaId}/${fileName}${size}`;
+  return proxyImageUrl(directUrl);
 };

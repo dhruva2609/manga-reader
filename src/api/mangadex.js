@@ -1,28 +1,25 @@
 import axios from 'axios';
+import { proxyImageUrl } from '../utils';
 
-
-const UPLOADS_URL = 'https://uploads.mangadex.org';
-const BASE_URL =
-    process.env.NODE_ENV === 'development'
-        ? ''
-        : '/api/mangadex';
-
-console.log('--- API DEBUG: Environment and BASE_URL ---');
-console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
-console.log(`Resolved BASE_URL: ${BASE_URL}`);
-console.log('-------------------------------------------');
+// In development, CRA's setupProxy.js handles /api/mangadex/* → https://api.mangadex.org/*
+// In production, vercel.json handles the same rewrite.
+// Both environments use the same /api/mangadex prefix.
+const BASE_URL = '/api/mangadex';
 
 export const searchManga = async (query, includedTags = []) => {
     const url = `${BASE_URL}/manga`;
+    console.log(`DEBUG: Calling searchManga URL: ${url}`); // <-- DEBUG
     try {
-        const res = await axios.get(url, { params: { title: query, limit: 10 } });
-
-        // Check if res.data.data exists before accessing .length
-        if (!res?.data?.data) {
-            console.error("No data received from API");
-            return [];
-        }
-
+        const res = await axios.get(url, {
+            params: {
+                title: query,
+                limit: 10,
+                includes: ['cover_art'],
+                includedTags: includedTags,
+                contentRating: ['safe', 'suggestive', 'erotica'],
+            }
+        });
+        console.log('DEBUG: searchManga successful, returned:', res.data.data.length, 'manga'); // <-- DEBUG
         return res.data.data;
     } catch (error) {
         console.error('searchManga error:', error);
@@ -59,38 +56,44 @@ export const getChapters = async (mangaId) => {
 };
 
 export const getChapterPages = async (chapterId) => {
-    if (!chapterId) return [];
-
-    try {
-        const res = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
-        const { baseUrl, chapter } = res.data;
-
-        if (!chapter || !chapter.data || !chapter.hash) return [];
-
-        // FIX: Construct the FULL target URL before passing to the proxy
-        const pageUrls = chapter.data.map((file) => {
-            const fullTargetUrl = `${baseUrl}/data/${chapter.hash}/${file}`;
-
-            // In development, call directly. In production, use the /manga-image/ prefix.
-            return process.env.NODE_ENV === 'development'
-                ? fullTargetUrl
-                : `/manga-image/${encodeURIComponent(fullTargetUrl)}`;
-        });
-
-        return pageUrls;
-    } catch (error) {
-        console.error('getChapterPages error:', error);
+    if (!chapterId) {
+        console.error('getChapterPages error: chapterId is undefined');
         return [];
     }
-};
+    const url = `${BASE_URL}/at-home/server/${chapterId}`;
+    console.log(`DEBUG: Calling getChapterPages URL: ${url}`); // <-- DEBUG
 
-export const getCoverUrl = (mangaId, fileName) => {
-    if (!mangaId || !fileName) return '';
-    const fullTargetUrl = `${UPLOADS_URL}/covers/${mangaId}/${fileName}`;
+    try {
+        // Step 1: Get the host server and image hash/files from the API
+        const res = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
+        const { baseUrl, chapter } = res.data;;
 
-    return process.env.NODE_ENV === 'development'
-        ? fullTargetUrl
-        : `/manga-image/${encodeURIComponent(fullTargetUrl)}`;
+        console.log('DEBUG: Chapter Server Response Data (partial):', {
+            baseUrl: res.data.baseUrl,
+            hash: res.data.chapter.hash,
+            dataLength: res.data.chapter.data.length
+        }); // <-- DEBUG
+
+        // Ensure data is valid
+        if (!chapter || !chapter.data || !chapter.hash) {
+            console.error('getChapterPages error: Invalid chapter data', res.data);
+            return [];
+        }
+
+        // Route all page images through the proxy (works in both dev and prod)
+        const pageUrls = chapter.data.map((file) =>
+            proxyImageUrl(`${baseUrl}/data/${chapter.hash}/${file}`)
+        );
+        console.log('DEBUG: First Page URL constructed:', pageUrls[0]);
+        return pageUrls;
+    } catch (error) {
+        if (error.response && error.response.status === 404) {
+            console.error(`getChapterPages error: Chapter ${chapterId} not found (404)`);
+        } else {
+            console.error('getChapterPages error:', error);
+        }
+        return [];
+    }
 };
 
 export const getReaderData = async (chapterId) => {
@@ -99,16 +102,14 @@ export const getReaderData = async (chapterId) => {
 
     try {
         // Step 1: Get pages list via proxy
-        const serverRes = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
+        const serverRes = await axios.get(serverUrl);
         const { baseUrl, chapter: chapterData } = serverRes.data;
-        // CRITICAL FIX: Route page URLs through the internal image proxy in production.
-        const imageHost = process.env.NODE_ENV === 'development' ? baseUrl : '/api/mangadex-img';
-        const pageUrls = chapterData.data.map(file => {
-            const fullTargetUrl = `${baseUrl}/data/${chapterData.hash}/${file}`;
-            return process.env.NODE_ENV === 'development'
-                ? fullTargetUrl
-                : `/manga-image/${encodeURIComponent(fullTargetUrl)}`;
-        });
+
+        // Route all page images through the proxy (works in both dev and prod)
+        const pageUrls = chapterData.data.map(file =>
+            proxyImageUrl(`${baseUrl}/data/${chapterData.hash}/${file}`)
+        );
+
         // Step 2 & 3: Get chapter and manga details
         const chapterUrl = `${BASE_URL}/chapter/${chapterId}`;
         const mangaUrl = `${BASE_URL}/manga/${chapterId}`;

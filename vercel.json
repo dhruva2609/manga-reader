@@ -5,8 +5,8 @@
       "destination": "/api/mangadex-proxy?path=:path*"
     },
     {
-      "source": "/manga-image/:url*",
-      "destination": "/api/mangadex-img?url=:url*"
+      "source": "/manga-image",
+      "destination": "/api/mangadex-img"
     },
     {
       "source": "/(.*)",

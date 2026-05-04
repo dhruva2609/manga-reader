@@ -3,12 +3,8 @@ import { getCoverUrl, getMangaTitle } from '../../utils';
 import './MangaCard.css';
 
 const MangaCard = ({ manga, onSelect, displayVariant }) => {
-  // 1. Find the filename inside the relationships array
-  const coverFileName = manga.relationships?.find(r => r.type === 'cover_art')?.attributes?.fileName;
-
-  // 2. Pass both required arguments to the helper
-  const coverUrl = getCoverUrl(manga.id, coverFileName);
-
+  // Pass the full manga object — getCoverUrl will extract id + fileName internally
+  const coverUrl = getCoverUrl(manga);
   const title = getMangaTitle(manga);
 
   const handleSelect = () => {
