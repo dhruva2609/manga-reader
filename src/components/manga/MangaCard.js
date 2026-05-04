@@ -1,11 +1,14 @@
 import React from "react";
-// import { useFavorites } from "../../context/FavoritesContext";
-// import { useReadingProgress } from "../../context/ReadingProgressContext";
 import { getCoverUrl, getMangaTitle } from '../../utils';
 import './MangaCard.css';
 
 const MangaCard = ({ manga, onSelect, displayVariant }) => {
-  const coverUrl = getCoverUrl(manga);
+  // 1. Find the filename inside the relationships array
+  const coverFileName = manga.relationships?.find(r => r.type === 'cover_art')?.attributes?.fileName;
+
+  // 2. Pass both required arguments to the helper
+  const coverUrl = getCoverUrl(manga.id, coverFileName);
+
   const title = getMangaTitle(manga);
 
   const handleSelect = () => {
@@ -18,7 +21,12 @@ const MangaCard = ({ manga, onSelect, displayVariant }) => {
     <div className={`manga-card ${displayVariant === 'grid' ? 'grid-variant' : ''} ${displayVariant === 'compact' ? 'compact-variant' : ''}`} onClick={handleSelect}>
       <div className="card-image-container">
         {coverUrl ? (
-          <img src={coverUrl} alt={title} className="card-image" />
+          <img
+            src={coverUrl}
+            alt={title}
+            className="card-image"
+            onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }} // Fallback for broken proxy hits
+          />
         ) : (
           <img src="https://via.placeholder.com/150" alt={title} className="card-image" />
         )}
@@ -29,4 +37,5 @@ const MangaCard = ({ manga, onSelect, displayVariant }) => {
     </div>
   );
 };
+
 export default MangaCard;

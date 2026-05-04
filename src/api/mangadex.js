@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+
+const UPLOADS_URL = 'https://uploads.mangadex.org';
 const BASE_URL =
     process.env.NODE_ENV === 'development'
         ? ''
@@ -57,44 +59,38 @@ export const getChapters = async (mangaId) => {
 };
 
 export const getChapterPages = async (chapterId) => {
-    if (!chapterId) {
-        console.error('getChapterPages error: chapterId is undefined');
-        return [];
-    }
-    const url = `${BASE_URL}/at-home/server/${chapterId}`;
-    console.log(`DEBUG: Calling getChapterPages URL: ${url}`); // <-- DEBUG
+    if (!chapterId) return [];
 
     try {
-        // Step 1: Get the host server and image hash/files from the API
         const res = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
-        const { baseUrl, chapter } = res.data;;
+        const { baseUrl, chapter } = res.data;
 
-        console.log('DEBUG: Chapter Server Response Data (partial):', {
-            baseUrl: res.data.baseUrl,
-            hash: res.data.chapter.hash,
-            dataLength: res.data.chapter.data.length
-        }); // <-- DEBUG
+        if (!chapter || !chapter.data || !chapter.hash) return [];
 
-        // Ensure data is valid
-        if (!chapter || !chapter.data || !chapter.hash) {
-            console.error('getChapterPages error: Invalid chapter data', res.data);
-            return [];
-        }
+        // FIX: Construct the FULL target URL before passing to the proxy
+        const pageUrls = chapter.data.map((file) => {
+            const fullTargetUrl = `${baseUrl}/data/${chapter.hash}/${file}`;
 
-        // CRITICAL FIX: Map page URLs to use the internal image proxy in production for the Referer header fix.
-        // Locally uses the direct baseUrl for speed.
-        const imageHost = process.env.NODE_ENV === 'development' ? baseUrl : '/api/mangadex-img';
-        const pageUrls = chapter.data.map((file) => `${imageHost}/data/${chapter.hash}/${file}`);
-        console.log('DEBUG: First Page URL constructed:', pageUrls[0]); // <-- DEBUG
+            // In development, call directly. In production, use the /manga-image/ prefix.
+            return process.env.NODE_ENV === 'development'
+                ? fullTargetUrl
+                : `/manga-image/${encodeURIComponent(fullTargetUrl)}`;
+        });
+
         return pageUrls;
     } catch (error) {
-        if (error.response && error.response.status === 404) {
-            console.error(`getChapterPages error: Chapter ${chapterId} not found (404)`);
-        } else {
-            console.error('getChapterPages error:', error);
-        }
+        console.error('getChapterPages error:', error);
         return [];
     }
+};
+
+export const getCoverUrl = (mangaId, fileName) => {
+    if (!mangaId || !fileName) return '';
+    const fullTargetUrl = `${UPLOADS_URL}/covers/${mangaId}/${fileName}`;
+
+    return process.env.NODE_ENV === 'development'
+        ? fullTargetUrl
+        : `/manga-image/${encodeURIComponent(fullTargetUrl)}`;
 };
 
 export const getReaderData = async (chapterId) => {
@@ -103,13 +99,16 @@ export const getReaderData = async (chapterId) => {
 
     try {
         // Step 1: Get pages list via proxy
-        const serverRes = await axios.get(serverUrl);
+        const serverRes = await axios.get(`${BASE_URL}/at-home/server/${chapterId}`);
         const { baseUrl, chapter: chapterData } = serverRes.data;
-
         // CRITICAL FIX: Route page URLs through the internal image proxy in production.
         const imageHost = process.env.NODE_ENV === 'development' ? baseUrl : '/api/mangadex-img';
-        const pageUrls = chapterData.data.map(file => `${imageHost}/data/${chapterData.hash}/${file}`);
-
+        const pageUrls = chapterData.data.map(file => {
+            const fullTargetUrl = `${baseUrl}/data/${chapterData.hash}/${file}`;
+            return process.env.NODE_ENV === 'development'
+                ? fullTargetUrl
+                : `/manga-image/${encodeURIComponent(fullTargetUrl)}`;
+        });
         // Step 2 & 3: Get chapter and manga details
         const chapterUrl = `${BASE_URL}/chapter/${chapterId}`;
         const mangaUrl = `${BASE_URL}/manga/${chapterId}`;
