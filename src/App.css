@@ -403,12 +403,16 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
   width: 100%;
+  gap: 1rem;
 }
 
-.reader-toolbar>span {
-  font-weight: 600;
+.reader-toolbar > span {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-main);
+  line-height: 1.3;
 }
 
 .page-controls {
@@ -463,11 +467,22 @@ body {
 
 @media (max-width: 768px) {
   .reader .page-controls {
-    gap: 1rem;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .reader .page-controls span {
+    order: -1;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
   }
 
   .reader .manga-page {
-    max-height: 60vh;
+    max-height: 65vh;
+    border-radius: 4px;
   }
 }
 
@@ -539,26 +554,47 @@ button:active {
 
   .content {
     border-radius: 0;
-    padding: 1.5rem 0.5rem;
+    padding: 4.5rem 1rem 2rem 1rem;
+    /* Adjust for fixed navbar */
   }
 
   .manga-details,
   .chapter-list,
   .reader,
   .welcome-placeholder {
-    padding: 1.2rem 0.5rem;
-    max-width: 98vw;
+    padding: 1.5rem 1rem;
+    max-width: 100%;
   }
 
   .content-banner {
     padding: 1rem 1rem;
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
   .reader {
-    padding: 1.2rem 0.2rem;
-    max-width: 100vw;
-    width: 100vw;
+    padding: 1.5rem 0.75rem;
+    max-width: 100%;
+    width: 100%;
+    border-radius: 0;
+    /* Edge to edge on mobile */
+  }
+
+  .reader-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+  }
+
+  .reader-toolbar > span {
+    font-size: 1rem;
+    text-align: left;
+  }
+
+  .download-pdf-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.95rem;
+    padding: 0.8rem 1.5rem;
   }
 }
 
