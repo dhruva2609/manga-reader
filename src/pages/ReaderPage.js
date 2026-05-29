@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useReadingProgress } from "../context/ReadingProgressContext";
 import DownloadPdfButton from "../components/reader/DownloadPdfButton";
@@ -8,6 +8,8 @@ import { getMangaTitle } from "../utils";
 const ReaderPage = () => {
   const { chapterId } = useParams();
   const { updateProgress, getMangaProgress } = useReadingProgress();
+
+  const isBookmarkRestored = useRef(false);
 
   const [pages, setPages] = useState([]);
   const [manga, setManga] = useState(null);
@@ -102,6 +104,7 @@ const ReaderPage = () => {
   useEffect(() => {
     const fetchReaderData = async () => {
       setLoading(true);
+      isBookmarkRestored.current = false;
       try {
         const { pages: fetchedPages, manga: fetchedManga, chapterTitle: fetchedChapterTitle } = await getReaderData(chapterId);
         setPages(fetchedPages);
@@ -120,20 +123,21 @@ const ReaderPage = () => {
   }, [chapterId]);
 
   useEffect(() => {
-    if (manga) {
+    if (manga && !isBookmarkRestored.current) {
       const progress = getMangaProgress(manga.id);
       if (progress && progress.lastReadChapterId === chapterId) {
         setPageIdx(progress.lastReadPage || 0);
       } else {
         setPageIdx(0);
       }
+      isBookmarkRestored.current = true;
     }
   }, [manga, chapterId, getMangaProgress]);
 
 
   // 1. Save reading progress with current page
   useEffect(() => {
-    if (manga && chapterId && !loading) {
+    if (manga && chapterId && !loading && isBookmarkRestored.current) {
       updateProgress(manga, chapterId, chapterTitle, pageIdx);
     }
   }, [manga, chapterId, chapterTitle, pageIdx, updateProgress, loading]);

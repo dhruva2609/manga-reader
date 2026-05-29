@@ -193,46 +193,68 @@
   font-size: 1.05rem;
 }
 
-.resume-strip {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-top: 1rem;
-  padding: 0.6rem 1rem;
-  background: rgba(108, 99, 255, 0.08);
-  border: 1px solid rgba(108, 99, 255, 0.2);
-  border-radius: 8px;
-  max-width: fit-content;
-}
-
-.resume-label {
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: var(--accent);
-  letter-spacing: 0.05em;
-}
-
-.resume-btn {
-  background: none;
-  border: none;
-  color: var(--text-main);
-  font-size: 0.95rem;
-  cursor: pointer;
-  padding: 0;
-  text-align: left;
-  transition: color 0.2s, transform 0.2s;
+.resume-strip-pill {
   display: inline-flex;
   align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+  padding: 0.5rem 1.25rem;
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.08) 0%, rgba(255, 86, 246, 0.05) 100%);
+  border: 1px solid rgba(108, 99, 255, 0.2);
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 15px rgba(108, 99, 255, 0.05);
+  font-family: inherit;
+  font-size: 0.88rem;
+  color: var(--text-main);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
 }
 
-.resume-btn strong {
-  color: var(--accent);
-  margin: 0 0.2rem;
+.resume-strip-pill:hover {
+  transform: translateY(-2px) scale(1.01);
+  border-color: var(--accent);
+  box-shadow: 0 8px 25px rgba(108, 99, 255, 0.15);
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.12) 0%, rgba(255, 86, 246, 0.08) 100%);
 }
 
-.resume-btn:hover {
+.resume-label-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
   color: var(--accent);
-  transform: translateX(4px);
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.resume-divider {
+  color: rgba(108, 99, 255, 0.3);
+  font-weight: 300;
+  font-size: 0.85rem;
+}
+
+.resume-btn-text {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.resume-btn-text strong {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.resume-title-truncate {
+  display: inline-block;
+  max-width: 160px;
+  vertical-align: bottom;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .home-stats-grid {
@@ -527,6 +549,18 @@
 
   .scroll-item .manga-card img {
     height: 200px;
+  }
+
+  .resume-strip-pill {
+    padding: 0.45rem 1rem !important;
+    font-size: 0.8rem !important;
+    width: 100% !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+  
+  .resume-title-truncate {
+    max-width: 90px !important;
   }
 }
 

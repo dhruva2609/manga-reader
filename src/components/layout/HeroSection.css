@@ -159,32 +159,33 @@
 }
 
 /* Secondary Button (Hollow Pink) */
-.hero-btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 14px 28px;
-  border-radius: 50px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+.hero-section .hero-buttons .hero-btn-secondary {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 14px 28px !important;
+  border-radius: 50px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
 }
 
-.hero-btn-secondary:hover {
-  border-color: #fff;
-  background: rgba(255, 255, 255, 0.1);
+.hero-section .hero-buttons .hero-btn-secondary:hover {
+  border-color: #fff !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #fff !important;
 }
 
-.hero-btn-secondary.active {
-  border-color: #FF56F6;
-  color: #FF56F6;
-  background: rgba(255, 86, 246, 0.1);
-  box-shadow: 0 0 15px rgba(255, 86, 246, 0.2);
+.hero-section .hero-buttons .hero-btn-secondary.active {
+  border-color: #FF56F6 !important;
+  color: #FF56F6 !important;
+  background: rgba(255, 86, 246, 0.15) !important;
+  box-shadow: 0 0 15px rgba(255, 86, 246, 0.25) !important;
 }
 
 /* === Mobile Responsiveness === */

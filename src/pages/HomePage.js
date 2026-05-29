@@ -121,15 +121,16 @@ const HomePage = () => {
           <h2>Welcome back, Reader! <span className="hand-wave">👋</span></h2>
           <p>Explore your premium ad-free reader engine synced live with global CDN servers.</p>
           {lastRead && (
-            <div className="resume-strip animate-slide-up">
-              <span className="resume-label">🔖 RESUME BOOKMARK:</span>
-              <button
-                className="resume-btn"
-                onClick={() => navigate(`/read/${lastRead.lastReadChapterId}`)}
-              >
-                Continue <strong>{lastRead.title || "Manga"}</strong> (Chapter {lastRead.lastReadChapterTitle || "Active"}, Page {lastRead.lastReadPage + 1}) →
-              </button>
-            </div>
+            <button
+              className="resume-strip-pill animate-slide-up"
+              onClick={() => navigate(`/read/${lastRead.lastReadChapterId}`)}
+            >
+              <span className="resume-label-tag">🔖 RESUME BOOKMARK</span>
+              <span className="resume-divider">|</span>
+              <span className="resume-btn-text">
+                Continue <strong className="resume-title-truncate" title={lastRead.title || "Manga"}>{lastRead.title || "Manga"}</strong> · Ch. {lastRead.lastReadChapterTitle ? String(lastRead.lastReadChapterTitle).replace(/chapter/i, '').trim() : "Active"} (P. {lastRead.lastReadPage + 1}) →
+              </span>
+            </button>
           )}
         </div>
 
