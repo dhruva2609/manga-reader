@@ -58,21 +58,18 @@
 }
 
 /* === Base Styles === */
-body {
+html, body {
   font-family: 'Outfit', sans-serif;
-  /* Changed from Inter */
   color: var(--text-main);
   margin: 0;
   padding: 0;
   background: var(--bg-main);
-  /* Add smooth scrolling for the whole page */
   scroll-behavior: smooth;
 }
 
 /* === Layout === */
 .main-layout {
   min-height: 90vh;
-  background: var(--bg-main);
   background-image: var(--bg-pattern);
   background-size: var(--bg-pattern-size);
   background-position: var(--bg-pattern-pos);

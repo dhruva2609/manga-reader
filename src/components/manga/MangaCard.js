@@ -24,7 +24,23 @@ const MangaCard = ({ manga, onSelect, displayVariant, progress, maxProgress, rat
       className={`manga-card ${displayVariant ? displayVariant + '-variant' : ''} ${glowClass}`} 
       onClick={handleSelect}
     >
-      {displayVariant === 'continue-reading' ? (
+      {displayVariant === 'history' ? (
+        <>
+          <div className="card-image-container history-cover">
+            <img
+              src={coverUrl || "https://via.placeholder.com/150"}
+              alt={title}
+              className="card-image"
+              onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }}
+            />
+          </div>
+          <div className="history-info">
+            <div className="manga-card-title">{title}</div>
+            <span className="chapter-text">{manga.lastReadChapterTitle || 'Unknown Chapter'}</span>
+            <span className="history-timestamp">{new Date(manga.timestamp).toLocaleDateString()}</span>
+          </div>
+        </>
+      ) : displayVariant === 'continue-reading' ? (
         <div className="card-image-container full-cover">
           <img
             src={coverUrl || "https://via.placeholder.com/150"}

@@ -66,9 +66,18 @@
 
 @keyframes sway {
   0% {
-    transform: translateX(0) rotate(0deg) scale(var(--scale, 1));
+    transform: translateX(-40px) rotate(-30deg) scale(var(--scale, 1));
   }
   100% {
-    transform: translateX(30px) rotate(45deg) scale(var(--scale, 1));
+    transform: translateX(40px) rotate(30deg) scale(var(--scale, 1));
+  }
+}
+
+@media (max-width: 768px) {
+  .sakura-container {
+    z-index: 0;
+  }
+  .sakura-petal {
+    pointer-events: none; /* iOS Safari fix */
   }
 }

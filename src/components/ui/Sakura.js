@@ -5,17 +5,35 @@ const Sakura = () => {
   const [petals, setPetals] = useState([]);
 
   useEffect(() => {
-    // Generate 20 petals with random positions, delays, and durations
-    const newPetals = Array.from({ length: 20 }).map((_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      animationDelay: Math.random() * 5,
-      animationDuration: 10 + Math.random() * 10,
-      swayDuration: 3 + Math.random() * 4, /* Unique sway duration 3s to 7s */
-      size: Math.random() * 0.5 + 0.5,
-      shapeClass: `sakura-shape-${Math.floor(Math.random() * 4) + 1}`
-    }));
-    setPetals(newPetals);
+    let currentCount = -1;
+
+    const handleResize = () => {
+      const width = window.innerWidth;
+      // Progressive reduction based on screen width
+      let petalCount = 20;
+      if (width <= 480) petalCount = 4;
+      else if (width <= 768) petalCount = 8;
+      else if (width <= 1024) petalCount = 12;
+
+      // Only update if count changed to avoid unnecessary re-renders
+      if (currentCount !== petalCount) {
+        currentCount = petalCount;
+        const newPetals = Array.from({ length: petalCount }).map((_, i) => ({
+          id: i,
+          left: Math.random() * 100,
+          animationDelay: Math.random() * 5,
+          animationDuration: 10 + Math.random() * 10,
+          swayDuration: 3 + Math.random() * 4, /* Unique sway duration 3s to 7s */
+          size: Math.random() * 0.5 + 0.5,
+          shapeClass: `sakura-shape-${Math.floor(Math.random() * 4) + 1}`
+        }));
+        setPetals(newPetals);
+      }
+    };
+
+    handleResize(); // Initial setup
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
