@@ -6,6 +6,7 @@ import { searchManga } from "./api/mangadex";
 
 // --- Layout Components ---
 import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
 
 // --- Page Components ---
 import HomePage from './pages/HomePage';
@@ -63,6 +64,7 @@ function App() {
                                 <Route path="/history" element={<HistoryPage />} />
                             </Routes>
                         </main>
+                        <Footer />
                     </div>
                 </div>
             </ReadingProgressProvider>

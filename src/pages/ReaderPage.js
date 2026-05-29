@@ -16,6 +16,89 @@ const ReaderPage = () => {
   const [imgLoaded, setImgLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const [scrollMode, setScrollMode] = useState(() => localStorage.getItem("readerScrollMode") || "single");
+  const [theme, setTheme] = useState(() => localStorage.getItem("readerTheme") || "dark");
+  const [paperFilter, setPaperFilter] = useState(() => localStorage.getItem("readerPaperFilter") || "none");
+  const [scrollPercent, setScrollPercent] = useState(0);
+
+  useEffect(() => {
+    localStorage.setItem("readerScrollMode", scrollMode);
+  }, [scrollMode]);
+
+  useEffect(() => {
+    localStorage.setItem("readerTheme", theme);
+  }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem("readerPaperFilter", paperFilter);
+  }, [paperFilter]);
+
+  // Track window scroll percentage for continuous mode
+  useEffect(() => {
+    if (scrollMode !== "continuous" || pages.length === 0 || loading) return;
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (docHeight > 0) {
+        const pct = (scrollTop / docHeight) * 100;
+        setScrollPercent(pct);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    // Initial run
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [scrollMode, loading, pages]);
+
+  // Observer for page changes in continuous scroll mode
+  useEffect(() => {
+    if (scrollMode !== "continuous" || pages.length === 0 || loading) return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: "-25% 0px -45% 0px", // triggers when image crosses screen center area
+      threshold: 0.05
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = parseInt(entry.target.getAttribute("data-page-index"), 10);
+          if (!isNaN(index)) {
+            setPageIdx(index);
+          }
+        }
+      });
+    }, observerOptions);
+
+    const timer = setTimeout(() => {
+      const images = document.querySelectorAll(".manga-page-continuous");
+      images.forEach(img => observer.observe(img));
+    }, 400);
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [scrollMode, pages, loading]);
+
+  // Auto scroll to active page when continuous layout is loaded
+  useEffect(() => {
+    if (scrollMode === "continuous" && pages.length > 0 && pageIdx > 0 && !loading) {
+      const timer = setTimeout(() => {
+        const targetImg = document.querySelector(`[data-page-index="${pageIdx}"]`);
+        if (targetImg) {
+          targetImg.scrollIntoView({ block: "center" });
+        }
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scrollMode, loading]);
+
   useEffect(() => {
     const fetchReaderData = async () => {
       setLoading(true);
@@ -95,7 +178,7 @@ const ReaderPage = () => {
   const mangaTitle = manga ? getMangaTitle(manga) : '';
 
   return (
-    <div className="reader">
+    <div className={`reader reader-theme-${theme} reader-scroll-${scrollMode}`}>
       {/* Page Progress Bar */}
       <div
         className="reader-progress-bar-wrapper"
@@ -108,7 +191,7 @@ const ReaderPage = () => {
         <div
           className="reader-progress-bar-fill"
           style={{
-            width: `${pageProgress}%`,
+            width: `${scrollMode === "continuous" ? scrollPercent : pageProgress}%`,
           }}
         />
         <span
@@ -119,9 +202,7 @@ const ReaderPage = () => {
       </div>
 
       {/* Toolbar with title and download button */}
-      <div
-        className="reader-toolbar"
-      >
+      <div className="reader-toolbar">
         <span>
           {mangaTitle} {chapterTitle ? `- ${chapterTitle}` : ""}
         </span>
@@ -132,40 +213,104 @@ const ReaderPage = () => {
         />
       </div>
 
-      {/* Manga Page Image */}
-      <img
-        src={pages[pageIdx]}
-        alt={`Page ${pageIdx + 1}`}
-        className={`manga-page${imgLoaded ? " loaded" : ""}`}
-        onLoad={() => setImgLoaded(true)}
-        style={{
-          width: "100%",
-          maxWidth: 800,
-          display: "block",
-          margin: "0 auto",
-        }}
-      />
+      {/* Reader Settings Control Panel */}
+      <div className="reader-settings-panel">
+        <div className="reader-setting-group">
+          <label htmlFor="layout-select">Layout Mode:</label>
+          <select
+            id="layout-select"
+            className="reader-setting-select"
+            value={scrollMode}
+            onChange={(e) => setScrollMode(e.target.value)}
+          >
+            <option value="single">📖 Single Page</option>
+            <option value="continuous">📜 Continuous Scroll</option>
+          </select>
+        </div>
+        <div className="reader-setting-group">
+          <label htmlFor="theme-select">Theme:</label>
+          <select
+            id="theme-select"
+            className="reader-setting-select"
+            value={theme}
+            onChange={(e) => setTheme(e.target.value)}
+          >
+            <option value="dark">🌙 Dark Mode</option>
+            <option value="light">☀️ Light Mode</option>
+            <option value="sepia">🌾 Warm Sepia</option>
+            <option value="oled">🕶️ OLED Black</option>
+          </select>
+        </div>
+        <div className="reader-setting-group">
+          <label htmlFor="filter-select">Comfort Filter:</label>
+          <select
+            id="filter-select"
+            className="reader-setting-select"
+            value={paperFilter}
+            onChange={(e) => setPaperFilter(e.target.value)}
+          >
+            <option value="none">✨ Original Digital</option>
+            <option value="vintage">📖 Vintage Manga Book</option>
+            <option value="eink">🕶️ E-Ink Comfort Mode</option>
+            <option value="parchment">🌾 Cozy Amber Parchment</option>
+            <option value="contrast">✒️ High-Contrast Ink</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Manga Page Image(s) with comfort filters */}
+      <div className={`manga-pages-container reader-filter-${paperFilter}`}>
+        {scrollMode === "continuous" ? (
+          <div style={{ width: "100%" }}>
+            {pages.map((src, idx) => (
+              <img
+                key={idx}
+                src={src}
+                alt={`Page ${idx + 1}`}
+                data-page-index={idx}
+                className="manga-page-continuous"
+                onError={(e) => {
+                  e.target.src = 'https://placehold.co/800x1200/256c8064/ffffff?text=Page+Load+Error';
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          <img
+            src={pages[pageIdx]}
+            alt={`Page ${pageIdx + 1}`}
+            className={`manga-page${imgLoaded ? " loaded" : ""}`}
+            onLoad={() => setImgLoaded(true)}
+            style={{
+              width: "100%",
+              maxWidth: 800,
+              display: "block",
+              margin: "0 auto",
+            }}
+          />
+        )}
+      </div>
 
       {/* Navigation Controls */}
-      <div
-        className="page-controls"
-      >
-        <button
-          onClick={() => setPageIdx((i) => Math.max(i - 1, 0))}
-          disabled={pageIdx === 0}
-        >
-          Previous
-        </button>
-        <span>
-          Page {pageIdx + 1} / {pages.length}
-        </span>
-        <button
-          onClick={() => setPageIdx((i) => Math.min(i + 1, pages.length - 1))}
-          disabled={pageIdx === pages.length - 1}
-        >
-          Next
-        </button>
-      </div>
+      {scrollMode === "single" && (
+        <div className="page-controls">
+          <button
+            onClick={() => setPageIdx((i) => Math.max(i - 1, 0))}
+            disabled={pageIdx === 0}
+          >
+            Previous
+          </button>
+          <span>
+            Page {pageIdx + 1} / {pages.length}
+          </span>
+          <button
+            onClick={() => setPageIdx((i) => Math.min(i + 1, pages.length - 1))}
+            disabled={pageIdx === pages.length - 1}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };

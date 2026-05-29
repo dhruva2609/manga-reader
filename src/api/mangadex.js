@@ -45,17 +45,23 @@ const api = axios.create({
 
 export const searchManga = async (query, includedTags = []) => {
     try {
-        const res = await api.get(`${BASE_URL}/manga`, {
-            params: {
-                title: query,
-                limit: 10,
-                includes: ['cover_art'],
-                includedTags,
-                contentRating: ['safe', 'suggestive', 'erotica'],
-                hasAvailableChapters: 'true',
-                availableTranslatedLanguage: ['en'],
-            },
-        });
+        const params = {
+            limit: 10,
+            includes: ['cover_art'],
+            contentRating: ['safe', 'suggestive', 'erotica'],
+            hasAvailableChapters: 'true',
+            availableTranslatedLanguage: ['en'],
+        };
+
+        if (query && query.trim() !== '') {
+            params.title = query;
+        }
+
+        if (includedTags && includedTags.length > 0) {
+            params.includedTags = includedTags;
+        }
+
+        const res = await api.get(`${BASE_URL}/manga`, { params });
         return res.data.data;
     } catch (error) {
         console.error('searchManga error:', error.message);

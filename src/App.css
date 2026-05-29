@@ -49,6 +49,59 @@ body {
 .main-layout {
   min-height: 90vh;
   background: var(--bg-main);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ambient glow blobs matching the footer's depth layers */
+.main-layout::before {
+  content: '';
+  position: absolute;
+  top: 15%;
+  right: -250px;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(81, 66, 252, 0.08) 0%, rgba(81, 66, 252, 0) 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+  animation: floatGlow1 20s infinite alternate ease-in-out;
+}
+
+.main-layout::after {
+  content: '';
+  position: absolute;
+  bottom: 25%;
+  left: -250px;
+  width: 650px;
+  height: 650px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 86, 246, 0.06) 0%, rgba(255, 86, 246, 0) 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+  animation: floatGlow2 25s infinite alternate ease-in-out;
+}
+
+@keyframes floatGlow1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(-100px, 60px) scale(1.15);
+  }
+}
+
+@keyframes floatGlow2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(100px, -60px) scale(1.1);
+  }
 }
 
 .content {
@@ -56,11 +109,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: var(--bg-main);
+  background: transparent; /* Let the glowing background show through! */
   min-height: 100vh;
-  box-shadow: 0 6px 32px rgba(81, 66, 252, 0.07);
-  /* Updated shadow to purple hint */
+  box-shadow: 0 6px 32px rgba(81, 66, 252, 0.03);
   position: relative;
+  z-index: 2; /* Content sits above glows */
   overflow-x: hidden;
 }
 
@@ -137,13 +190,14 @@ body {
   overflow: hidden;
   /* Needed for the shine effect */
   background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   /* Matched radius */
   padding: 0;
   display: flex;
   flex-direction: column;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  will-change: transform, box-shadow;
+  will-change: transform, box-shadow, border-color;
 }
 
 /* Shine Effect */
@@ -175,8 +229,8 @@ body {
 
 .manga-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  /* Softer, deeper shadow */
+  border-color: var(--accent);
+  box-shadow: 0 15px 35px rgba(81, 66, 252, 0.15), 0 5px 15px rgba(255, 86, 246, 0.08);
 }
 
 /* Specific card elements */
@@ -225,27 +279,134 @@ body {
   margin-bottom: 1.2rem;
 }
 
-.manga-details button {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  padding: 0.6rem 1.4rem;
-  border-radius: 7px;
-  font-weight: 500;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(108, 99, 255, 0.07);
-  transition: background 0.2s;
+/* === Premium Global Button System === */
+.hero-btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%) !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  border-radius: 50px !important;
+  color: white !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 25px rgba(81, 66, 252, 0.2) !important;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  font-size: 0.95rem !important;
+  font-family: 'Outfit', sans-serif !important;
+  text-decoration: none !important;
+  height: 48px !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important; /* Globally prevent button text wrapping */
 }
 
-.manga-details button:hover {
-  background: var(--accent2);
+.hero-btn-primary:hover {
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 0 12px 30px rgba(81, 66, 252, 0.35) !important;
+  background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%) !important;
+}
+
+.hero-btn-primary:active {
+  transform: translateY(-1px) scale(0.99) !important;
+}
+
+.hero-btn-secondary {
+  background: rgba(255, 255, 255, 0.04) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 12px 24px !important;
+  border-radius: 50px !important;
+  color: var(--text-main) !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  font-size: 0.95rem !important;
+  font-family: 'Outfit', sans-serif !important;
+  text-decoration: none !important;
+  height: 48px !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important; /* Globally prevent button text wrapping */
+}
+
+.hero-btn-secondary:hover {
+  border-color: var(--accent) !important;
+  background: rgba(81, 66, 252, 0.06) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 15px rgba(81, 66, 252, 0.15) !important;
+}
+
+.hero-btn-secondary:active {
+  transform: translateY(0) !important;
+}
+
+.resume-manga-btn {
+  background: linear-gradient(135deg, var(--accent2) 0%, #FF85F9 100%) !important;
+  box-shadow: 0 8px 25px rgba(255, 86, 246, 0.2) !important;
+}
+
+.resume-manga-btn:hover {
+  background: linear-gradient(135deg, #FF85F9 0%, var(--accent2) 100%) !important;
+  box-shadow: 0 12px 30px rgba(255, 86, 246, 0.35) !important;
+}
+
+/* --- Premium Manga Details Action Flow --- */
+.manga-info .hero-buttons {
+  display: flex !important;
+  flex-wrap: wrap !important; /* Enable wrapping so buttons flow gracefully on tablets/laptops */
+  align-items: center !important;
+  gap: 0.8rem !important;
+  width: 100% !important;
+  margin-top: 1.5rem !important;
+}
+
+.manga-info .hero-buttons .hero-btn-primary,
+.manga-info .hero-buttons .hero-btn-secondary,
+.manga-info .hero-buttons .fav-trigger-btn {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.btn-emoji {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 6px;
+}
+
+.btn-text-truncate {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 @media (max-width: 768px) {
   .manga-details .hero-buttons {
-    flex-direction: column;
-    gap: 0.5rem;
+    flex-direction: column !important;
+    align-items: stretch !important; /* Stretch buttons fully to look incredibly proper and clean */
+    gap: 0.8rem !important;
+    width: 100% !important;
+    margin-top: 1.2rem !important;
+  }
+  
+  .manga-details .hero-buttons .hero-btn-primary,
+  .manga-details .hero-buttons .hero-btn-secondary,
+  .manga-details .hero-buttons .fav-dropdown-wrapper,
+  .manga-details .hero-buttons .fav-trigger-btn {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .manga-details .hero-buttons .btn-text-truncate {
+    max-width: 100% !important; /* Let text fill the mobile button width */
   }
 }
 
@@ -359,44 +520,287 @@ body {
   margin-bottom: 2rem;
 }
 
-.reader-progress-bar {
-  height: 5px;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%);
-  border-radius: 3px;
-  margin-bottom: 1.2rem;
-  transition: width 0.2s;
+/* --- Reader scroll configurations --- */
+.reader.reader-scroll-continuous {
+  max-width: 900px;
+  padding: 2rem 0; /* Webtoons are edge-to-edge usually */
 }
 
-.reader-progress-bar-wrapper {
-  /* New wrapper for the bar, replacing inline styles */
+.reader.reader-scroll-continuous .manga-page-continuous {
   width: 100%;
-  height: 8px;
-  background: var(--border);
+  max-width: 800px;
+  display: block;
+  margin: 0 auto 0.5rem auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border-radius: 4px;
-  margin-bottom: 1.2rem;
-  position: relative;
-  overflow: hidden;
+}
+
+/* --- Reader Theme Colors --- */
+/* 1. Dark Theme */
+.reader.reader-theme-dark {
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+/* 2. Light Theme */
+.reader.reader-theme-light {
+  background: #ffffff;
+  color: #1a202c;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+.reader.reader-theme-light .reader-toolbar > span,
+.reader.reader-theme-light .reader-progress-bar-text {
+  color: #1a202c;
+}
+.reader.reader-theme-light .page-controls span {
+  color: #2d3748;
+}
+.reader.reader-theme-light .reader-progress-bar-text {
+  background: #f7fafc;
+}
+
+/* 3. Sepia Theme */
+.reader.reader-theme-sepia {
+  background: #f5eedc;
+  color: #4a3c31;
+  box-shadow: 0 8px 30px rgba(74, 60, 49, 0.1);
+}
+.reader.reader-theme-sepia .reader-toolbar > span,
+.reader.reader-theme-sepia .reader-progress-bar-text {
+  color: #4a3c31;
+}
+.reader.reader-theme-sepia .page-controls span {
+  color: #5c4b3d;
+}
+.reader.reader-theme-sepia .reader-progress-bar-text {
+  background: #ebdcb9;
+}
+.reader.reader-theme-sepia .reader-progress-bar-wrapper {
+  background: #ebdcb9;
+}
+
+/* 4. OLED Theme */
+.reader.reader-theme-oled {
+  background: #000000;
+  color: #e2e8f0;
+  border: 1px solid #1a202c;
+  box-shadow: none;
+}
+.reader.reader-theme-oled .reader-toolbar > span,
+.reader.reader-theme-oled .reader-progress-bar-text {
+  color: #e2e8f0;
+}
+.reader.reader-theme-oled .page-controls span {
+  color: #a0aec0;
+}
+.reader.reader-theme-oled .reader-progress-bar-text {
+  background: #111111;
+}
+.reader.reader-theme-oled .reader-progress-bar-wrapper {
+  background: #111111;
+}
+
+/* --- Reader Settings Toolbar --- */
+.reader-settings-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap; /* Wrap beautifully on tablets and small screens instead of clipping */
+  width: 100%;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+  background: rgba(108, 99, 255, 0.04);
+  border-radius: 14px;
+  border: 1px dashed rgba(108, 99, 255, 0.15);
+  box-sizing: border-box; /* Avoid padding causing overflow */
+}
+
+.reader-setting-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  flex-shrink: 0; /* Keep the controls from squishing */
+}
+
+.reader-setting-group label {
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap; /* Absolutely prevent label text from wrapping onto two lines! */
+}
+
+.reader-theme-light .reader-setting-group label,
+.reader-theme-sepia .reader-setting-group label {
+  color: inherit;
+}
+
+.reader-setting-select {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.reader-setting-select:hover {
+  border-color: var(--accent);
+}
+
+.reader-theme-light .reader-setting-select {
+  background: #f7fafc;
+  color: #1a202c;
+  border-color: #cbd5e0;
+}
+.reader-theme-sepia .reader-setting-select {
+  background: #fcf9f2;
+  color: #4a3c31;
+  border-color: #d8cbaf;
+}
+.reader-theme-oled .reader-setting-select {
+  background: #111;
+  color: #e2e8f0;
+  border-color: #2d3748;
+}
+
+/* === Glowing Gradient Page-Scroll Progress Indicator 🧬 === */
+.reader-progress-bar-wrapper {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 4px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  z-index: 10000 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: 0 1px 12px rgba(81, 66, 252, 0.25) !important;
+  overflow: visible !important; /* Allow the neon glow to spill over nicely */
 }
 
 .reader-progress-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  border-radius: 4px;
-  transition: width 0.3s;
+  height: 100% !important;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 0 10px var(--accent2), 0 0 18px var(--accent) !important;
+  transition: width 0.15s ease-out !important;
+  position: relative;
+}
+
+/* Pulsing lead particle at the front of the progress bar */
+.reader-progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #FFF;
+  box-shadow: 0 0 10px #FFF, 0 0 20px var(--accent2);
 }
 
 .reader-progress-bar-text {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+  font-size: 0.85rem !important;
+  color: white !important;
+  font-weight: 700 !important;
+  background: rgba(26, 26, 26, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  padding: 8px 16px !important;
+  border-radius: 30px !important;
+  pointer-events: none !important;
+  z-index: 10001 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+  font-family: 'Outfit', sans-serif !important;
+  letter-spacing: 0.03em !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.3s ease !important;
+}
+
+/* === Custom Comfort Paper & E-Ink Texture Filters 🎨 === */
+.manga-pages-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: background-color 0.4s ease, filter 0.4s ease;
+}
+
+/* Paper Texture overlays using multiple linear/radial repeating gradients to mock grain and weave */
+.manga-pages-container::after {
+  content: '';
   position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 500;
-  background: var(--bg-card);
-  padding: 0 4px;
-  border-radius: 2px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  mix-blend-mode: multiply;
+  background-image: 
+    repeating-radial-gradient(circle at 17% 23%, rgba(0,0,0,0.01) 0px, rgba(0,0,0,0.01) 1px, transparent 1px, transparent 4px),
+    repeating-linear-gradient(45deg, rgba(0,0,0,0.01) 0px, rgba(0,0,0,0.01) 2px, transparent 2px, transparent 5px),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.04) 100%);
+}
+
+/* Vintage Manga Paper Overlay */
+.manga-pages-container.reader-filter-vintage {
+  background-color: #f6efe2 !important;
+}
+.manga-pages-container.reader-filter-vintage::after {
+  opacity: 0.8;
+}
+.manga-pages-container.reader-filter-vintage img {
+  filter: sepia(0.38) contrast(1.15) brightness(0.92) saturate(0.85) !important;
+  mix-blend-mode: multiply;
+}
+
+/* E-Ink comfort Overlay */
+.manga-pages-container.reader-filter-eink {
+  background-color: #e4e7e9 !important;
+}
+.manga-pages-container.reader-filter-eink::after {
+  opacity: 0.55;
+}
+.manga-pages-container.reader-filter-eink img {
+  filter: grayscale(1) contrast(1.3) brightness(0.88) !important;
+  mix-blend-mode: multiply;
+}
+
+/* Cozy Amber Parchment Overlay */
+.manga-pages-container.reader-filter-parchment {
+  background-color: #eccfa2 !important;
+}
+.manga-pages-container.reader-filter-parchment::after {
+  opacity: 0.9;
+}
+.manga-pages-container.reader-filter-parchment img {
+  filter: sepia(0.68) contrast(1.08) brightness(0.86) saturate(0.65) !important;
+  mix-blend-mode: multiply;
+}
+
+/* High Contrast Ink style */
+.manga-pages-container.reader-filter-contrast img {
+  filter: contrast(1.35) brightness(0.84) saturate(0.9) !important;
 }
 
 .reader-toolbar {
@@ -891,4 +1295,250 @@ button:active {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
+}
+
+/* === Global Modal Styling === */
+.app-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: modalFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.app-modal-card {
+  width: 100%;
+  max-width: 580px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  overflow: hidden;
+  animation: modalScaleUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.app-modal-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-modal-body {
+  padding: 2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.app-modal-footer {
+  padding: 1.25rem 2rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.app-modal-action-btn {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.75rem 2rem;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(81, 66, 252, 0.2);
+  transition: all 0.25s;
+}
+
+.app-modal-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(81, 66, 252, 0.35);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(12px); }
+}
+
+@keyframes modalScaleUp {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* === Premium Favorites Dropdown UI === */
+.fav-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+  z-index: 1000;
+}
+
+.fav-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem !important;
+  font-weight: 600 !important;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.fav-trigger-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(81, 66, 252, 0.25);
+}
+
+.fav-trigger-btn.active {
+  background: rgba(81, 66, 252, 0.1) !important;
+  border: 1px solid var(--accent) !important;
+  color: var(--text-main) !important;
+}
+
+.fav-arrow-icon {
+  transition: transform 0.25s ease;
+  opacity: 0.7;
+}
+
+.fav-arrow-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 998;
+  background: transparent;
+}
+
+.fav-folder-menu {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0;
+  min-width: 240px;
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem 0.6rem 0.6rem 0.6rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  z-index: 1000;
+  overflow: hidden;
+  font-family: 'Outfit', sans-serif;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+/* Beautiful ambient top gradient line matching the footer's top decorative line */
+.fav-folder-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, 
+    rgba(81, 66, 252, 0) 0%, 
+    var(--accent) 35%, 
+    var(--accent2) 65%, 
+    rgba(255, 86, 246, 0) 100%
+  );
+  z-index: 2;
+}
+
+[data-theme="dark"] .fav-folder-menu {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.fav-folder-menu .menu-header {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  padding: 0.4rem 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Menu items styled to match the look, feel, and horizontal translations of .footer-link */
+.fav-folder-menu .menu-item {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: var(--text-muted) !important;
+  padding: 0.65rem 0.85rem !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  width: 100% !important;
+  transition: color 0.25s, background-color 0.25s, transform 0.25s !important;
+  box-shadow: none !important;
+  font-family: 'Outfit', sans-serif;
+}
+
+.fav-folder-menu .menu-item .item-emoji {
+  opacity: 0.7;
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+.fav-folder-menu .menu-item:hover {
+  color: var(--accent) !important;
+  background: rgba(81, 66, 252, 0.08) !important;
+  transform: translateX(4px);
+}
+
+.fav-folder-menu .menu-item:hover .item-emoji {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.fav-folder-menu .menu-item.selected {
+  background: rgba(81, 66, 252, 0.12) !important;
+  color: var(--accent) !important;
+  font-weight: 700 !important;
+}
+
+.fav-folder-menu .menu-item.selected .item-emoji {
+  opacity: 1;
+}
+
+.fav-folder-menu .check-icon {
+  margin-left: auto;
+  color: var(--accent2);
+}
+
+.fav-folder-menu .menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.4rem 0;
+}
+
+.fav-folder-menu .menu-item.remove-item {
+  color: var(--text-muted) !important;
+  font-weight: 700 !important;
+}
+
+.fav-folder-menu .menu-item.remove-item:hover {
+  background: rgba(255, 77, 77, 0.08) !important;
+  color: #ff4d4d !important;
+  transform: translateX(4px);
 }
