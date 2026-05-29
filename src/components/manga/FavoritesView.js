@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useFavorites } from '../../context/FavoritesContext';
+import { FolderHeart, ChevronDown } from 'lucide-react';
 import './FavoritesView.css';
 
 const FavoritesView = ({ onSelectManga }) => {
   const { favorites, removeFavorite } = useFavorites();
+  const [activeFolder, setActiveFolder] = useState('Currently Reading');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const folders = ['Currently Reading', 'Plan to Read', 'Completed'];
+
+  // Filter favorites based on the active folder
+  const filteredFavorites = favorites.filter(
+    (fav) => (fav.folder || 'Currently Reading') === activeFolder
+  );
 
   // The FavoritesView is the full-page grid displaying manga covers.
   if (!favorites || favorites.length === 0) {
@@ -17,10 +27,32 @@ const FavoritesView = ({ onSelectManga }) => {
 
   return (
     <div className="fav-view-container">
-      <h2 className="view-title">My Favorites</h2>
+      <div className="fav-header">
+        <h2 className="view-title">My Favorites</h2>
+
+        <div className="fav-tabs-container">
+          {folders.map(folder => (
+            <button
+              key={folder}
+              className={`fav-tab ${activeFolder === folder ? 'active' : ''}`}
+              onClick={() => setActiveFolder(folder)}
+            >
+              {folder === 'Currently Reading' && <span className="tab-icon">📖</span>}
+              {folder === 'Plan to Read' && <span className="tab-icon">📅</span>}
+              {folder === 'Completed' && <span className="tab-icon">✅</span>}
+              {folder}
+            </button>
+          ))}
+        </div>
+      </div>
       
-      <div className="fav-grid">
-        {favorites.map(manga => (
+      {filteredFavorites.length === 0 ? (
+        <div className="fav-empty">
+          <p>No manga found in "{activeFolder}".</p>
+        </div>
+      ) : (
+        <div className="fav-grid">
+          {filteredFavorites.map(manga => (
           // IMPORTANT: Pass the manga ID to the routing handler
           <div key={manga.id} className="fav-grid-item" onClick={() => onSelectManga(manga)}>
             <div className="fav-cover-wrapper">
@@ -42,7 +74,8 @@ const FavoritesView = ({ onSelectManga }) => {
             <h4 className="fav-item-title">{manga.title}</h4>
           </div>
         ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

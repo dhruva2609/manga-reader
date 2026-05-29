@@ -282,39 +282,86 @@
   margin-bottom: 0.5rem;
 }
 
-.favorite-folder-selector {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.4rem 0.6rem;
-  transition: background 0.2s;
-  margin-top: auto;
-}
-
-.favorite-folder-selector:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
+/* Custom Folder Dropdown */
 .folder-selector-icon {
   color: var(--accent);
   flex-shrink: 0;
 }
 
-.folder-dropdown {
-  background: transparent;
-  border: none;
-  color: var(--text-main);
-  font-size: 0.85rem;
-  font-weight: 600;
+.custom-folder-dropdown {
+  position: relative;
   width: 100%;
-  cursor: pointer;
-  outline: none;
+  margin-top: auto;
 }
 
-.folder-dropdown option {
+.custom-folder-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.custom-folder-dropdown-header:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.current-folder-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folder-chevron {
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.folder-chevron.open {
+  transform: rotate(180deg);
+}
+
+.custom-folder-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
   background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-folder-dropdown-item {
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.custom-folder-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-main);
 }
+
+.custom-folder-dropdown-item.active {
+  color: var(--accent);
+  background: rgba(108, 99, 255, 0.1);
+}
