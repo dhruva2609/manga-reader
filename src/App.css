@@ -1,20 +1,28 @@
 :root {
-  --bg-main: #f8fafb;
-  --bg-card: #fff;
-  --bg-sidebar: #f3f6fa;
-  --text-main: #23263A;
-  --text-muted: #8A8FA6;
+  --bg-main: #f4f7fb;
+  --bg-card: rgba(255, 255, 255, 0.75); /* More transparency for frosted glass effect */
+  --bg-sidebar: rgba(243, 246, 250, 0.85);
+  --text-main: #1E2132;
+  --text-muted: #7A809C;
   --accent: #6C63FF;
   --accent2: #5EDFFF;
-  --border: #e3e7ed;
+  --border: rgba(227, 231, 237, 0.6);
   /* Fix S1: Define missing text-primary variable */
   --text-primary: var(--text-main);
+  
+  /* Beautiful ambient mesh gradient for light mode */
+  --bg-pattern: 
+    radial-gradient(circle at 15% 50%, rgba(108, 99, 255, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(94, 223, 255, 0.18), transparent 25%),
+    radial-gradient(circle at 50% 80%, rgba(255, 86, 246, 0.12), transparent 25%),
+    radial-gradient(circle at 80% 90%, rgba(108, 99, 255, 0.15), transparent 25%);
+  --bg-pattern-size: 100% 100%;
+  --bg-pattern-pos: 0 0;
 }
 
 /* Updated Dark Mode to match the Crypto/NFT Image */
 [data-theme="dark"] {
-  --bg-main: #0D0D21;
-  /* Deepest Navy (Main Background) */
+  --bg-main: #0B0E14; /* Deep dark blue for night sky */
   --bg-card: #16162D;
   /* Slightly Lighter Navy (Card Background) */
   --bg-sidebar: #13132B;
@@ -31,6 +39,22 @@
   /* Low contrast border */
   /* Fix S1: Define missing text-primary variable in dark mode */
   --text-primary: var(--text-main);
+  
+  /* Starry background pattern - Realistic Parallax Stars */
+  --bg-pattern: 
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,0.8) 0.5px, transparent 1px),
+    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.5) 0.5px, transparent 1px),
+    radial-gradient(circle at 30% 40%, rgba(255,255,255,0.9) 1px, transparent 1.5px),
+    radial-gradient(circle at 40% 10%, rgba(255,255,255,0.3) 0.5px, transparent 1px),
+    radial-gradient(circle at 50% 90%, rgba(255,255,255,0.7) 0.5px, transparent 1px),
+    radial-gradient(circle at 60% 30%, rgba(255,255,255,0.4) 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 70%, rgba(255,255,255,0.8) 0.5px, transparent 1px),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.6) 0.5px, transparent 1px),
+    radial-gradient(circle at 90% 60%, rgba(255,255,255,0.9) 1px, transparent 1.5px),
+    radial-gradient(circle at 15% 50%, rgba(200,220,255,0.8) 0.5px, transparent 1px),
+    radial-gradient(circle at 85% 90%, rgba(255,240,200,0.8) 0.5px, transparent 1px);
+  --bg-pattern-size: 200px 200px, 300px 300px, 400px 400px, 250px 250px, 350px 350px, 450px 450px, 220px 220px, 320px 320px, 420px 420px, 280px 280px, 380px 380px;
+  --bg-pattern-pos: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
 }
 
 /* === Base Styles === */
@@ -49,10 +73,22 @@ body {
 .main-layout {
   min-height: 90vh;
   background: var(--bg-main);
+  background-image: var(--bg-pattern);
+  background-size: var(--bg-pattern-size);
+  background-position: var(--bg-pattern-pos);
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+[data-theme="dark"] .main-layout {
+  animation: starPan 180s linear infinite;
+}
+
+@keyframes starPan {
+  0% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+  100% { background-position: 200px 200px, 300px 150px, -400px 400px, 250px -250px, -350px -350px, 450px 0, 0 220px, -320px 320px, 420px 210px, 280px -280px, -380px 190px; }
 }
 
 /* Ambient glow blobs matching the footer's depth layers */
@@ -538,8 +574,8 @@ body {
 /* --- Reader Theme Colors --- */
 /* 1. Dark Theme */
 .reader.reader-theme-dark {
-  background: var(--bg-card);
-  color: var(--text-main);
+  background: #16162D;
+  color: #FFFFFF;
 }
 
 /* 2. Light Theme */
@@ -815,7 +851,7 @@ body {
 .reader-toolbar > span {
   font-weight: 700;
   font-size: 1.1rem;
-  color: var(--text-main);
+  color: inherit;
   line-height: 1.3;
 }
 

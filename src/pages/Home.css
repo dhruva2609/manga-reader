@@ -1116,3 +1116,67 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* === NEW CUSTOM DASHBOARD SECTIONS === */
+
+.custom-dashboard-section h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.02em;
+}
+
+.custom-horizontal-scroll {
+  display: flex;
+  gap: 1.2rem;
+  overflow-x: auto;
+  padding: 0.5rem 0.5rem 1.5rem 0.5rem;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.custom-horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.custom-scroll-item {
+  flex: 0 0 160px; /* Width matching screenshot proportion */
+  width: 160px;
+  max-width: 160px; /* Prevent long text from stretching the box */
+  cursor: pointer;
+}
+
+.custom-scroll-item .manga-card {
+  height: 100%;
+  width: 100%; /* Ensure card stays within bounds */
+}
+
+.custom-scroll-item .manga-card .card-image {
+  height: 220px;
+  border-radius: 10px; /* Fully rounded corners as in Image 3 */
+  width: 100%;
+  object-fit: cover;
+}
+
+.custom-library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.2rem;
+  padding: 0.5rem;
+}
+
+.custom-grid-item {
+  cursor: pointer;
+}
+
+.custom-grid-item .manga-card {
+  height: 100%;
+}
+
+.custom-grid-item .manga-card .card-image {
+  height: 240px;
+  border-radius: 10px;
+  width: 100%;
+  object-fit: cover;
+}

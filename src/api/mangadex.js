@@ -46,7 +46,7 @@ const api = axios.create({
 export const searchManga = async (query, includedTags = []) => {
     try {
         const params = {
-            limit: 10,
+            limit: 30, // Fetch more initially
             includes: ['cover_art'],
             contentRating: ['safe', 'suggestive', 'erotica'],
             hasAvailableChapters: 'true',
@@ -62,7 +62,7 @@ export const searchManga = async (query, includedTags = []) => {
         }
 
         const res = await api.get(`${BASE_URL}/manga`, { params });
-        return res.data.data;
+        return await filterMangaWithChapters(res.data.data, 10);
     } catch (error) {
         console.error('searchManga error:', error.message);
         return [];
@@ -94,7 +94,14 @@ export const getChapters = async (mangaId) => {
                 contentRating: ['safe', 'suggestive', 'erotica'],
             },
         });
-        return res.data.data;
+        
+        // Filter out external chapters (like MangaPlus links) and empty chapters
+        const readableChapters = res.data.data.filter(chapter => 
+            chapter.attributes.pages > 0 && 
+            !chapter.attributes.externalUrl
+        );
+        
+        return readableChapters;
     } catch (error) {
         console.error('getChapters error:', error.response?.data || error.message);
         return [];
@@ -155,11 +162,42 @@ export const getReaderData = async (chapterId) => {
     }
 };
 
+const filterMangaWithChapters = async (mangas, requiredCount) => {
+    const valid = [];
+    // Check in chunks of 5 to avoid hammering the API
+    for (let i = 0; i < mangas.length; i += 5) {
+        const chunk = mangas.slice(i, i + 5);
+        const checks = await Promise.all(chunk.map(async (m) => {
+            try {
+                const res = await api.get(`${BASE_URL}/manga/${m.id}/feed`, {
+                    params: { translatedLanguage: ['en'], limit: 50, contentRating: ['safe', 'suggestive', 'erotica'] }
+                });
+                
+                // Check if there is at least one readable chapter
+                const hasReadable = res.data.data.some(chapter => 
+                    chapter.attributes.pages > 0 && 
+                    !chapter.attributes.externalUrl
+                );
+                
+                return hasReadable ? m : null;
+            } catch (err) {
+                return null;
+            }
+        }));
+        
+        valid.push(...checks.filter(Boolean));
+        if (valid.length >= requiredCount) {
+            break;
+        }
+    }
+    return valid.slice(0, requiredCount);
+};
+
 export const getPopularManga = async () => {
     try {
         const res = await api.get(`${BASE_URL}/manga`, {
             params: {
-                limit: 20,
+                limit: 30, // Fetch more initially to account for filtered out items
                 includes: ['cover_art'],
                 order: { followedCount: 'desc' },
                 contentRating: ['safe', 'suggestive'],
@@ -167,7 +205,7 @@ export const getPopularManga = async () => {
                 availableTranslatedLanguage: ['en'],
             },
         });
-        return res.data.data;
+        return await filterMangaWithChapters(res.data.data, 10);
     } catch (error) {
         console.error('getPopularManga error:', error.message);
         return [];
@@ -178,7 +216,7 @@ export const getTrendingManga = async () => {
     try {
         const res = await api.get(`${BASE_URL}/manga`, {
             params: {
-                limit: 10,
+                limit: 25,
                 includes: ['cover_art', 'author'],
                 order: { followedCount: 'desc' },
                 contentRating: ['safe', 'suggestive'],
@@ -186,7 +224,7 @@ export const getTrendingManga = async () => {
                 availableTranslatedLanguage: ['en'],
             },
         });
-        return res.data.data;
+        return await filterMangaWithChapters(res.data.data, 10);
     } catch (error) {
         console.error('getTrendingManga error:', error.message);
         return [];
@@ -197,7 +235,7 @@ export const getRecentlyAddedManga = async () => {
     try {
         const res = await api.get(`${BASE_URL}/manga`, {
             params: {
-                limit: 15,
+                limit: 30,
                 includes: ['cover_art'],
                 order: { createdAt: 'desc' },
                 contentRating: ['safe', 'suggestive'],
@@ -205,7 +243,7 @@ export const getRecentlyAddedManga = async () => {
                 availableTranslatedLanguage: ['en'],
             },
         });
-        return res.data.data;
+        return await filterMangaWithChapters(res.data.data, 15);
     } catch (error) {
         console.error('getRecentlyAddedManga error:', error.message);
         return [];

@@ -4,7 +4,7 @@ import { useReadingProgress } from "../context/ReadingProgressContext";
 import DownloadPdfButton from "../components/reader/DownloadPdfButton";
 import { getReaderData } from "../api/mangadex";
 import { getMangaTitle } from "../utils";
-
+import "./ReaderPage.css";
 const ReaderPage = () => {
   const { chapterId } = useParams();
   const { updateProgress, getMangaProgress } = useReadingProgress();
@@ -175,8 +175,15 @@ const ReaderPage = () => {
   }, [pages.length]);
 
   if (loading) return <div className="loader">Loading Reader...</div>;
-  if (!pages.length) return <h1>Chapter pages not found.</h1>;
-
+  if (!pages.length) return (
+    <div className="reader-error-container">
+      <h2>Chapter pages not found.</h2>
+      <p>This chapter might be an external link, have no pages available, or the server failed to load them.</p>
+      <button className="go-back-btn" onClick={() => window.history.back()}>
+        Go Back
+      </button>
+    </div>
+  );
   // Page progress (within chapter)
   const pageProgress = ((pageIdx + 1) / pages.length) * 100;
   const mangaTitle = manga ? getMangaTitle(manga) : '';

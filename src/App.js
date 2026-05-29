@@ -22,6 +22,8 @@ import { ReadingProgressProvider } from "./context/ReadingProgressContext";
 
 import "./App.css";
 
+import Sakura from "./components/ui/Sakura";
+
 function App() {
     const [mangas, setMangas] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -48,6 +50,7 @@ function App() {
         <FavoritesProvider>
             <ReadingProgressProvider>
                 <div>
+                    <Sakura />
                     <Navbar
                         mangas={mangas}
                         loading={loading}

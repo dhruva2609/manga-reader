@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeroSection from '../components/layout/HeroSection';
 import MangaCard from '../components/manga/MangaCard';
-import { getPopularManga, getTrendingManga, getRecentlyAddedManga } from '../api/mangadex';
+import { getPopularManga, getTrendingManga, getRecentlyAddedManga, getMangaDetails } from '../api/mangadex';
 import { useFavorites } from '../context/FavoritesContext';
 import { useReadingProgress } from '../context/ReadingProgressContext';
 import {
@@ -38,13 +38,23 @@ const HomePage = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [popularData, trendData, recentData] = await Promise.all([
+        const [popularData, trendData, recentData, onePieceData] = await Promise.all([
           getPopularManga(),
           getTrendingManga(),
-          getRecentlyAddedManga()
+          getRecentlyAddedManga(),
+          getMangaDetails('a2c1d849-af05-4bbc-b2a7-866ebb10331f') // One Piece Colored ID
         ]);
+
+        let combinedTrending = trendData || [];
+        if (onePieceData) {
+          // Remove if it already exists to prevent duplicate keys
+          combinedTrending = combinedTrending.filter(m => m.id !== onePieceData.id);
+          // Prepend One Piece Colored
+          combinedTrending = [onePieceData, ...combinedTrending];
+        }
+
         setPopular(popularData || []);
-        setTrending(trendData || []);
+        setTrending(combinedTrending);
         setRecent(recentData || []);
       } catch (error) {
         console.error("Home page API fetch failed:", error);
@@ -93,19 +103,6 @@ const HomePage = () => {
   };
 
   if (loading) return <div className="loader">Loading Dashboard...</div>;
-
-  const renderMangaSection = (title, data, sectionKey) => (
-    <div className="home-section" key={sectionKey}>
-      <h3>{title}</h3>
-      <div className="horizontal-scroll">
-        {data.map(manga => (
-          <div key={manga.id} className="scroll-item" onClick={() => onSelect(manga)}>
-            <MangaCard manga={manga} onSelect={onSelect} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
 
   const heroManga = trending.length > 0 ? trending[0] : null;
   const poolForRoulette = [...popular, ...trending, ...recent];
@@ -178,13 +175,62 @@ const HomePage = () => {
 
 
       {/* Main categories */}
-      {trending.length > 1 && renderMangaSection(<><span role="img" aria-label="fire">🔥</span> Trending Now</>, trending.slice(1), "trending")}
-      {popular.length > 0 && renderMangaSection(<><span role="img" aria-label="crown">👑</span> Most Popular</>, popular, "popular")}
-      {recent.length > 0 && renderMangaSection(<><span role="img" aria-label="sparkles">✨</span> Fresh Picks</>, recent, "recent")}
+      {trending.length > 0 && (
+        <div className="home-section custom-dashboard-section" key="trending">
+          <h3><span role="img" aria-label="fire">🔥</span> Trending Now</h3>
+          <div className="custom-horizontal-scroll">
+            {trending.map((manga) => (
+              <div key={manga.id} className="custom-scroll-item" onClick={() => onSelect(manga)}>
+                <MangaCard 
+                  manga={manga} 
+                  onSelect={onSelect} 
+                  displayVariant="library"
+                  rating={manga.attributes?.rating}
+                  genres={manga.attributes?.tags?.filter(t => t.attributes?.group === 'genre').map(t => t.attributes?.name?.en).slice(0, 2).join(' • ')}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
+      {popular.length > 0 && (
+        <div className="home-section custom-dashboard-section" key="popular">
+          <h3><span role="img" aria-label="crown">👑</span> Most Popular</h3>
+          <div className="custom-horizontal-scroll">
+            {popular.map((manga) => (
+              <div key={manga.id} className="custom-scroll-item" onClick={() => onSelect(manga)}>
+                <MangaCard 
+                  manga={manga} 
+                  onSelect={onSelect} 
+                  displayVariant="library"
+                  rating={manga.attributes?.rating}
+                  genres={manga.attributes?.tags?.filter(t => t.attributes?.group === 'genre').map(t => t.attributes?.name?.en).slice(0, 2).join(' • ')}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-
-      {/* === ROULETTE SPINNER MODAL === */}
+      {recent.length > 0 && (
+        <div className="home-section custom-dashboard-section" key="recent">
+          <h3><span role="img" aria-label="sparkles">✨</span> Fresh Picks</h3>
+          <div className="custom-horizontal-scroll">
+            {recent.map((manga) => (
+              <div key={manga.id} className="custom-scroll-item" onClick={() => onSelect(manga)}>
+                <MangaCard 
+                  manga={manga} 
+                  onSelect={onSelect} 
+                  displayVariant="library"
+                  rating={manga.attributes?.rating}
+                  genres={manga.attributes?.tags?.filter(t => t.attributes?.group === 'genre').map(t => t.attributes?.name?.en).slice(0, 2).join(' • ')}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}      {/* === ROULETTE SPINNER MODAL === */}
       {showRouletteModal && (
         <div className="app-modal-overlay" onClick={() => setShowRouletteModal(false)}>
           <div className="app-modal-card roulette-modal-card glass-panel" onClick={(e) => e.stopPropagation()}>

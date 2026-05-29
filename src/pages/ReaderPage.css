@@ -1,0 +1,36 @@
+﻿
+.reader-error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: var(--text-main);
+  background: var(--bg-main);
+  text-align: center;
+  padding: 2rem;
+}
+.reader-error-container h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--accent);
+}
+.reader-error-container p {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+.go-back-btn {
+  padding: 0.8rem 2rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.go-back-btn:hover {
+  opacity: 0.8;
+}
+
