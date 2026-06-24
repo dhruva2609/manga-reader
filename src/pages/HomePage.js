@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeroSection from '../components/layout/HeroSection';
 import MangaCard from '../components/manga/MangaCard';
@@ -11,7 +11,14 @@ import {
   Dices,
   Sparkles,
   ArrowRight,
-  RefreshCw
+  RefreshCw,
+  Camera,
+  User,
+  Edit2,
+  Check,
+  Award,
+  BookOpen,
+  Trash2
 } from 'lucide-react';
 import './Home.css';
 
@@ -172,8 +179,6 @@ const HomePage = () => {
         </div>
       </div>
 
-
-
       {/* Main categories */}
       {trending.length > 0 && (
         <div className="home-section custom-dashboard-section" key="trending">
@@ -181,9 +186,9 @@ const HomePage = () => {
           <div className="custom-horizontal-scroll">
             {trending.map((manga) => (
               <div key={manga.id} className="custom-scroll-item" onClick={() => onSelect(manga)}>
-                <MangaCard 
-                  manga={manga} 
-                  onSelect={onSelect} 
+                <MangaCard
+                  manga={manga}
+                  onSelect={onSelect}
                   displayVariant="library"
                   rating={manga.attributes?.rating}
                   genres={manga.attributes?.tags?.filter(t => t.attributes?.group === 'genre').map(t => t.attributes?.name?.en).slice(0, 2).join(' • ')}
@@ -200,9 +205,9 @@ const HomePage = () => {
           <div className="custom-horizontal-scroll">
             {popular.map((manga) => (
               <div key={manga.id} className="custom-scroll-item" onClick={() => onSelect(manga)}>
-                <MangaCard 
-                  manga={manga} 
-                  onSelect={onSelect} 
+                <MangaCard
+                  manga={manga}
+                  onSelect={onSelect}
                   displayVariant="library"
                   rating={manga.attributes?.rating}
                   genres={manga.attributes?.tags?.filter(t => t.attributes?.group === 'genre').map(t => t.attributes?.name?.en).slice(0, 2).join(' • ')}
@@ -219,9 +224,9 @@ const HomePage = () => {
           <div className="custom-horizontal-scroll">
             {recent.map((manga) => (
               <div key={manga.id} className="custom-scroll-item" onClick={() => onSelect(manga)}>
-                <MangaCard 
-                  manga={manga} 
-                  onSelect={onSelect} 
+                <MangaCard
+                  manga={manga}
+                  onSelect={onSelect}
                   displayVariant="library"
                   rating={manga.attributes?.rating}
                   genres={manga.attributes?.tags?.filter(t => t.attributes?.group === 'genre').map(t => t.attributes?.name?.en).slice(0, 2).join(' • ')}
